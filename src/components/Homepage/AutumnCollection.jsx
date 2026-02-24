@@ -9,52 +9,50 @@ import { Heart } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-const TrendyCollection = () => {
-
-
-
+const AutumnCollection = () => {
+  // Mock data with NEW distinct images for the Autumn Collection
   const products = [
     {
       id: 1,
-      category: 'CHAIN',
-      name: 'chain 001',
-      price: '1,630,035.00৳',
-      // Replace with your actual image path
-      image: 'https://images.unsplash.com/photo-1599643478524-fb66f70a00eb?auto=format&fit=crop&q=80&w=400',
+      category: 'SHITAHAR',
+      name: 'Shitahar 008',
+      price: '515,467.35৳',
+      // New Image: Elegant gold necklace on dark background
+      image: 'https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 2,
-      category: 'BANGLE',
-      name: 'Bangles 001',
-      price: '845,958.53৳',
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=400',
+      category: 'SHITAHAR',
+      name: 'Shitahar 007',
+      price: '554,220.56৳',
+      // New Image: Traditional heavy gold jewelry
+      image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 3,
       category: 'SHITAHAR',
-      name: 'Shitahar 003',
-      price: '343,077.91৳',
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=400',
+      name: 'Shitahar 006',
+      price: '553,972.14৳',
+      // New Image: Bridal style gold necklace
+      image: 'https://images.unsplash.com/photo-1629224314594-2b131d278d1a?auto=format&fit=crop&q=80&w=400',
     },
     {
       id: 4,
-      category: 'CHURI',
-      name: 'Churi 001',
-      price: '1,115,536.68৳',
-      image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=400',
+      category: 'SHITAHAR',
+      name: 'Shitahar 005',
+      price: '650,591.42৳',
+      // New Image: Detailed gold pendant/earrings
+      image: 'https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&q=80&w=400',
     },
     {
-      id: 5, // Extra item to demonstrate the slider functionality
-      category: 'RING',
-      name: 'Gold Ring 005',
-      price: '125,500.00৳',
-      image: 'https://images.unsplash.com/photo-1605100804763-247f66126e28?auto=format&fit=crop&q=80&w=400',
+      id: 5, // Extra item for the slider loop
+      category: 'SHITAHAR',
+      name: 'Shitahar 004',
+      price: '480,000.00৳',
+      // New Image: Intricate gold piece
+      image: 'https://images.unsplash.com/photo-1589674781759-c21c37956a44?auto=format&fit=crop&q=80&w=400',
     },
   ];
-
-
-
-//   main
 
   return (
     <section className="py-16 bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,32 +60,32 @@ const TrendyCollection = () => {
       {/* --- Section Header --- */}
       <div className="text-center mb-10">
         <div className="flex items-center justify-center gap-4 mb-2">
-          <div className="h-[1px] bg-gray-300 w-12 md:w-24"></div>
+          <div className="h-[1px] bg-gray-200 w-12 md:w-24"></div>
           <h2 className="text-2xl md:text-3xl font-serif text-gray-800 tracking-wide">
-            Trendy Collection
+            Autumn Collection
           </h2>
-          <div className="h-[1px] bg-gray-300 w-12 md:w-24"></div>
+          <div className="h-[1px] bg-gray-200 w-12 md:w-24"></div>
         </div>
         <p className="text-gray-500 text-sm md:text-base">
-          Collect your loves with our newest arrivals.
+          Collect your loves with our autumn arrivals.
         </p>
       </div>
 
       {/* --- Swiper Slider --- */}
-      <div className="relative pb-12"> {/* pb-12 gives room for the pagination dots */}
+      <div className="relative pb-12">
         <Swiper
           modules={[Pagination, Autoplay]}
           spaceBetween={24}
           slidesPerView={1}
           autoplay={{
-            delay: 3000,
+            delay: 4500,
             disableOnInteraction: false,
           }}
           pagination={{
             clickable: true,
             dynamicBullets: true,
           }}
-          // Responsive breakpoints for grid layout
+          // Responsive grid layout
           breakpoints={{
             480: { slidesPerView: 2 },
             768: { slidesPerView: 3 },
@@ -99,7 +97,7 @@ const TrendyCollection = () => {
             <SwiperSlide key={product.id}>
               <div className="flex flex-col group cursor-pointer">
                 
-                {/* --- Product Image Container --- */}
+                {/* --- Product Image Container with Hover Effect --- */}
                 <div className="relative w-full aspect-square overflow-hidden rounded-sm bg-gray-100">
                   <img
                     src={product.image}
@@ -107,9 +105,9 @@ const TrendyCollection = () => {
                     className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                   />
                   
-                  {/* Hover Overlay with View Button */}
+                  {/* Dark Overlay & Quick View Button */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-[#d4af37] hover:text-white transition-colors duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                    <button className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-[#d4af37] hover:text-white transition-colors duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0">
                       Quick View
                     </button>
                   </div>
@@ -145,4 +143,4 @@ const TrendyCollection = () => {
   );
 };
 
-export default TrendyCollection;
+export default AutumnCollection;

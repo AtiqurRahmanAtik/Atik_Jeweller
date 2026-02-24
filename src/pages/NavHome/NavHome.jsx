@@ -1,3 +1,4 @@
+import AutumnCollection from "../../components/Homepage/AutumnCollection";
 import Banner from "../../components/Homepage/Banner";
 import PromotionalBanners from "../../components/Homepage/PromotionalBanners";
 import ShopByCategory from "../../components/Homepage/ShopByCategory";
@@ -16,6 +17,8 @@ const NavHome = () => {
             <ShopByCategory/>
 
             <TrendyCollection/>
+
+            <AutumnCollection/>
             
         </>
     );
