@@ -1,4 +1,5 @@
 import AboutHeader from "../../components/AboutUs/AboutHeader";
+import HeroSlider from "../../components/AboutUs/HeroSlider";
 
 
 const AboutUs = () => {
@@ -8,6 +9,7 @@ const AboutUs = () => {
        
 
         <AboutHeader/>
+        <HeroSlider/>
             
         </>
     );

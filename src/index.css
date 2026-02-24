@@ -29,3 +29,21 @@ body {
   /* Optional: Smooth transition */
   @apply transition-colors duration-300;
 }
+
+
+
+
+
+
+
+
+
+@keyframes kenburns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+.swiper-slide-active .ken-burns-image {
+  
+  animation: kenburns 6s ease-out forwards; 
+}
