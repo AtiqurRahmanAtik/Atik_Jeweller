@@ -10,14 +10,14 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 const AutumnCollection = () => {
-  // Mock data with NEW distinct images for the Autumn Collection
+  
   const products = [
     {
       id: 1,
       category: 'SHITAHAR',
       name: 'Shitahar 008',
       price: '515,467.35৳',
-      // New Image: Elegant gold necklace on dark background
+    
       image: 'https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?auto=format&fit=crop&q=80&w=400',
     },
     {
@@ -25,7 +25,7 @@ const AutumnCollection = () => {
       category: 'SHITAHAR',
       name: 'Shitahar 007',
       price: '554,220.56৳',
-      // New Image: Traditional heavy gold jewelry
+     
       image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400',
     },
     {
@@ -33,7 +33,7 @@ const AutumnCollection = () => {
       category: 'SHITAHAR',
       name: 'Shitahar 006',
       price: '553,972.14৳',
-      // New Image: Bridal style gold necklace
+     
       image: 'https://images.unsplash.com/photo-1629224314594-2b131d278d1a?auto=format&fit=crop&q=80&w=400',
     },
     {
@@ -41,15 +41,15 @@ const AutumnCollection = () => {
       category: 'SHITAHAR',
       name: 'Shitahar 005',
       price: '650,591.42৳',
-      // New Image: Detailed gold pendant/earrings
+      
       image: 'https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&q=80&w=400',
     },
     {
-      id: 5, // Extra item for the slider loop
+      id: 5, 
       category: 'SHITAHAR',
       name: 'Shitahar 004',
       price: '480,000.00৳',
-      // New Image: Intricate gold piece
+    
       image: 'https://images.unsplash.com/photo-1589674781759-c21c37956a44?auto=format&fit=crop&q=80&w=400',
     },
   ];
@@ -85,7 +85,7 @@ const AutumnCollection = () => {
             clickable: true,
             dynamicBullets: true,
           }}
-          // Responsive grid layout
+          
           breakpoints={{
             480: { slidesPerView: 2 },
             768: { slidesPerView: 3 },
@@ -97,7 +97,7 @@ const AutumnCollection = () => {
             <SwiperSlide key={product.id}>
               <div className="flex flex-col group cursor-pointer">
                 
-                {/* --- Product Image Container with Hover Effect --- */}
+                
                 <div className="relative w-full aspect-square overflow-hidden rounded-sm bg-gray-100">
                   <img
                     src={product.image}
@@ -113,7 +113,7 @@ const AutumnCollection = () => {
                   </div>
                 </div>
 
-                {/* --- Product Details --- */}
+               
                 <div className="mt-4 flex justify-between items-start px-1">
                   <div>
                     <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1.5">

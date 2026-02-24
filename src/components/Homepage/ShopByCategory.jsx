@@ -4,7 +4,7 @@ const categories = [
   {
     id: 1,
     name: 'EARRINGS',
-    // Replace with your actual image paths
+    
     image: '/images/category-earrings.jpg',
     link: '/shop/earrings'
   },

@@ -80,7 +80,6 @@ const navItems = [
             </ul>
           </div>
 
-          {/* Desktop Search Bar */}
           <div className="hidden lg:block relative w-full max-w-sm">
             <input 
               type="text" 
@@ -96,7 +95,7 @@ const navItems = [
         {/* Center: Logo */}
         <div className="navbar-center">
           <NavLink to="/" className="flex flex-col items-center">
-            {/* Replace with your actual logo path */}
+            
             <img 
               src="/kunjo-logo.png" 
               alt="Kunjo Jewellers" 
@@ -106,7 +105,7 @@ const navItems = [
                 e.target.nextSibling.style.display = 'block';
               }}
             />
-            {/* Fallback Text Logo */}
+           
             <div className="hidden text-center">
               <h1 className="text-xl font-serif text-[#d4af37] font-bold uppercase tracking-widest">Kunjo</h1>
               <p className="text-[10px] uppercase tracking-widest font-semibold text-black">Jewellers</p>
@@ -173,7 +172,7 @@ const navItems = [
       </div>
     </div>
 
-        {/* Center: Main Page Links */}
+        {/* Center: Main Page  */}
         <div className="navbar-center flex-1 justify-center">
           <ul className="menu menu-horizontal px-1 gap-1">
             

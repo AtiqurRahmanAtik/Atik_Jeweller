@@ -4,6 +4,7 @@ import DualBanners from "../../components/Homepage/DualBanners";
 import FeaturedProducts from "../../components/Homepage/FeaturedProducts";
 import PromotionalBanners from "../../components/Homepage/PromotionalBanners";
 import ShopByCategory from "../../components/Homepage/ShopByCategory";
+import TodayGoldPrice from "../../components/Homepage/TodayGoldPrice";
 import TrendyCollection from "../../components/Homepage/TrendyCollection";
 
 
@@ -25,6 +26,8 @@ const NavHome = () => {
             <DualBanners/>
 
             <FeaturedProducts/>
+
+            <TodayGoldPrice/>
             
         </>
     );

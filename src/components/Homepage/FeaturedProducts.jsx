@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper modules
@@ -12,7 +12,7 @@ import 'swiper/css/pagination';
 const FeaturedProducts = () => {
   
   const [activeTab, setActiveTab] = useState('New Arrivals');
-//   tabs data of array
+
   const tabs = ['New Arrivals', 'Featured', 'Best Seller'];
 
   
@@ -58,7 +58,7 @@ const FeaturedProducts = () => {
   return (
     <section className="py-16 bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      {/* --- Section Header --- */}
+   
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="h-[1px] bg-gray-300 w-16 md:w-32"></div>
@@ -86,7 +86,7 @@ const FeaturedProducts = () => {
         </div>
       </div>
 
-      {/* --- Swiper Slider --- */}
+      
       <div className="relative pb-12">
         <Swiper
           modules={[Pagination, Autoplay]}
