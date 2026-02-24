@@ -13,6 +13,7 @@ import Error404 from "../pages/Error404/Error404";
 
 import Shop from "../pages/Shop/Shop";
 import NavHome from "../pages/NavHome/NavHome";
+import AboutUs from "../pages/AboutUs/AboutUs";
 
 
 
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: "/shop",
         element: <Shop/>
+      },
+      {
+        path: "/aboutUs",
+        element : <AboutUs/>
       }
 
 
