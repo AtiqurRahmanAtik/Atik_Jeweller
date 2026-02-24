@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        const THEME_KEY = "pms_theme"; 
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const initialTheme = savedTheme 
+                             ? savedTheme 
+                             : (window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light");
+
+        if (initialTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+    <meta charset="utf-8" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1a1a1a" />
+    
+    <title>Hotelverse | All-in-One Hotel Management Software & PMS System</title>
+    <meta name="description" content="Streamline your property with Hotelverse: the premier PMS system for hotel booking software, resort management, and guest engagement. Drive direct bookings today." />
+    <meta name="keywords" content="hotel management software, PMS system, hotel booking software, resort management, guest management system, hotelverse, property management system" />
+    <meta name="author" content="Hotelverse" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Hotelverse | Transform Your Resort & Hotel Operations" />
+    <meta property="og:description" content="An intelligent PMS system designed for modern hospitality. Manage bookings, guests, and resorts seamlessly with Hotelverse." />
+    <meta property="og:image" content="og-image-hotelverse.png" /> 
+    <meta property="og:url" content="https://www.hotelverse.com" />
+    <meta property="og:site_name" content="Hotelverse" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hotelverse | Modern Hotel Booking & PMS Software" />
+    <meta name="twitter:description" content="Boost efficiency and guest satisfaction with our all-in-one resort management system. Explore the Hotelverse difference." />
+    <meta name="twitter:image" content="twitter-card-hotelverse.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Hotelverse",
+      "operatingSystem": "Web, Cloud-based",
+      "applicationCategory": "BusinessApplication",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1250"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
