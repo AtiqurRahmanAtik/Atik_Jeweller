@@ -10,13 +10,16 @@ const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem("authUser");
     return storedUser ? JSON.parse(storedUser) : null;
   });
+
   const [loading, setLoading] = useState(false);
   const axiosSecure = useAxiosPublic();
+
   const [branch, setBranch] = useState(() => {
     const storedBranch = localStorage.getItem("authBranch");
     return storedBranch || user?.branch || "teaxo";
   });
 
+  // Registration
   const registerUser = async (email, password, name, branch) => {
     setLoading(true);
     try {
@@ -34,6 +37,8 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+
+  // LoginUser
   const loginUser = async (email, password) => {
     setLoading(true);
     try {

@@ -29,14 +29,13 @@ export const router = createBrowserRouter([
     errorElement: <Error404 />,
     children: [
    
-   
-
+  
       // If you still need the Login page, you can add it on a separate path like this:
       // 
-      // {
-      //   path: "/",
-      //   element: <Login />,
-      // },
+      {
+        path: "/login",
+        element: <Login />,
+      },
       
 
       // Navbar routes

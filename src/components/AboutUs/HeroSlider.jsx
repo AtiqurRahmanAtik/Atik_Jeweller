@@ -4,9 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 
 // Import the required CSS for the fade effect
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
+import 'swiper/css/bundle';
 
 const HeroSlider = () => {
   return (

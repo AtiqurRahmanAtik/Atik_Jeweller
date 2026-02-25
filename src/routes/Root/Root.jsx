@@ -1,20 +1,25 @@
 
-import { Outlet } from "react-router-dom";
+import { Outlet,  } from "react-router-dom";
 
 import Footer from '../../components/Footer';
 import NavigationBar from "../../components/NavigationBar";
 
 
 const Root = () => {
+
+    
+  
+
+
     return (
         <div>
 
-          <header>
-            {/* <Navbar/> */}
-
-            <NavigationBar/>    
-        </header> 
-          
+         
+        <header>
+          <NavigationBar />
+        </header>
+      
+        
         {/* Dynamic section */}
         <main className=''>
             <Outlet />

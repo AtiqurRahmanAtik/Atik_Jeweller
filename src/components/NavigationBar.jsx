@@ -12,6 +12,11 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import navLogo from "../../src/assets/Logo/logo.svg";
+
+
+
+
 const NavigationBar = () => {
   
 
@@ -97,7 +102,7 @@ const navItems = [
           <NavLink to="/" className="flex flex-col items-center">
             
             <img 
-              src="/kunjo-logo.png" 
+              src={navLogo} 
               alt="Kunjo Jewellers" 
               className="h-16 object-contain" 
               onError={(e) => {

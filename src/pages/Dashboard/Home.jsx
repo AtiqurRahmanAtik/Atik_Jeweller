@@ -62,6 +62,8 @@ const Home = () => {
     },
   ];
 
+
+  // main
   return (
     <div className="p-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
       {/* Header */}
@@ -69,7 +71,7 @@ const Home = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
             <LayoutDashboard className="w-6 h-6 text-indigo-600" />
-            Hotelverse Dashboard
+            Data Jeweller
           </h1>
           <p className="text-slate-500 dark:text-slate-400">
             Welcome back, Concierge. Here’s what’s happening today.
