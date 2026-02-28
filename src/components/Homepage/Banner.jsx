@@ -9,6 +9,9 @@ import 'swiper/css/navigation';
 
 
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useState } from 'react';
 
 const Banner = () => {
   
@@ -37,6 +40,31 @@ const Banner = () => {
       alt: 'Bridal Jewellery Set',
     },
   ];
+
+  const [banner, SetBanner] = useState([]);
+  console.log("Banner Data : ", banner);
+  
+
+
+  const getBanner = async()=>{
+
+     const res = await axios.get("http://localhost:8000/api/banners/");
+
+     SetBanner(res.data)
+
+     return res.data;
+
+  }
+
+  
+
+    useEffect(()=>{
+      
+      getBanner();
+     
+
+    })
+  
 
 
 

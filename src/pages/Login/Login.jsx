@@ -55,6 +55,7 @@ const Login = () => {
     if (!valid) return;
 
     setLoading(true);
+    
     try {
       await loginUser(email, password);
       

@@ -22,6 +22,7 @@ const AuthProvider = ({ children }) => {
   // Registration
   const registerUser = async (email, password, name, branch) => {
     setLoading(true);
+
     try {
       const { data } = await axiosSecure.post("/user/post", {
         email,
@@ -45,11 +46,15 @@ const AuthProvider = ({ children }) => {
       const response = await axiosSecure.post("/user/login", { email, password });
       const data = response.data;
 
+      console.log("Login data : ", data)
+
       setUser(data.user);
       setBranch(data.user.branch);
       localStorage.setItem("authUser", JSON.stringify(data.user));
       localStorage.setItem("authBranch", data.user.branch);
       localStorage.setItem("authToken", data.token);
+
+      localStorage.setItem()
       
       return data.user;
     } catch (error) {
@@ -58,6 +63,9 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+
+  
 
   const logoutUser = async () => {
     setLoading(true);

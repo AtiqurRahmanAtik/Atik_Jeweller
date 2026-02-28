@@ -1,49 +1,15 @@
-import React from 'react';
+
 import {
   MdDashboard,
-  MdViewList,
-  MdDesktopMac,
-  MdCleaningServices,
-  MdPointOfSale,
-  MdEvent,
-  MdLayers,
-  MdAccountBalance,
-  MdSettings,
-  MdAdminPanelSettings,
   MdLogout,
-  MdDateRange,
-  MdPeople,
-  MdEventNote,
-  MdAssignment,
-  MdDescription,
-  MdReceipt,
-  MdShoppingCart,
-  MdKitchen,
-  MdTableRestaurant,
-  MdInventory,
-  MdLocalShipping,
-  MdSwapHoriz,
-  MdInput,
-  MdOutput,
-  MdDeleteSweep,
-  MdAttachMoney,
-  MdMoneyOff,
-  MdNoteAdd,
-  MdAccountBalanceWallet,
-  MdVpnKey,
-  MdLanguage,
-  MdFlag,
-  MdCurrencyExchange,
-  MdFeedback,
-  MdBusiness,
-  MdSupervisedUserCircle,
-  MdHistory,
-  MdSecurity,
-  MdComputer,
-  MdInsertChart,
-  MdSettingsSuggest,
-  MdAssessment
+  MdOutlineCategory,
+  MdOutlineImage,
+  MdOutlineMoreHoriz,
+  MdOutlinePhotoSizeSelectActual,
+  MdOutlineShoppingBag,
+
 } from "react-icons/md";
+import PrivateRoot from "./PrivateRoot";
 
 const useMenuItems = () => {
 
@@ -54,9 +20,35 @@ const useMenuItems = () => {
       icon: <MdDashboard className="text-lg" />,
     },
  
-   
-   
+{
+  title: "Ecommerce",
+  icon: <MdOutlineShoppingBag className="text-lg" />,
+  list: [
     {
+      title: "Banner",
+      path: "/ecommerce/banner",
+      icon: <MdOutlineImage className="text-lg" />,
+    },
+    {
+      title: "Three Dot Image",
+      path: "/ecommerce/three-dot-image",
+      icon: <MdOutlineMoreHoriz className="text-lg" />,
+    },
+    {
+      title: "Product Category",
+      path: "/ecommerce/product-category",
+      icon: <MdOutlineCategory className="text-lg" />,
+    },
+    {
+      title: "Products",
+      path: "/ecommerce/products",
+      icon: <MdOutlinePhotoSizeSelectActual className="text-lg" />,
+    },
+  ],
+},
+
+
+{
       title: "Logout",
       path: "/logout",
       icon: <MdLogout className="text-lg" />,

@@ -1,15 +1,21 @@
-
 import { Headphones, Facebook, Instagram, Youtube, Music2 } from 'lucide-react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
+
 const Footer = () => {
   
   const aboutLinks = [
     { name: 'About Us', path: '/about' },
     { name: 'Contact', path: '/contact' },
     { name: 'FAQ', path: '/faq' },
-    { name: 'Terms & Conditions', path: '/terms' },
     { name: 'Blog', path: '/blog' },
     { name: 'Sitemap', path: '/sitemap' },
+  ];
+
+  const policyLinks = [
+    { name: 'Terms of Use', path: '/termsOfUse' },
+    { name: 'Privacy Policy', path: '/privacy' },
+    { name: 'Cookies Policy', path: '/cookies' },
+    { name: 'Refund Policy', path: '/refund' },
   ];
 
   const categoryLinks = [
@@ -22,15 +28,13 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white pt-16 pb-6 border-t border-gray-200 ">
+    <footer className="bg-white pt-16 pb-6 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-4 mb-12">
           
-          
+          {/* Brand Section */}
           <div className="flex flex-col items-start lg:items-center">
-            
             <img 
               src="/kunjo-logo.png" 
               alt="Kunjo Jewellers" 
@@ -40,8 +44,6 @@ const Footer = () => {
                 e.target.nextSibling.style.display = 'block';
               }}
             />
-           
-
             <div className="hidden text-center">
               <h2 className="text-2xl font-serif text-[#d4af37] font-bold uppercase tracking-widest">Kunjo</h2>
               <p className="text-[10px] uppercase tracking-widest font-semibold text-black">Jewellers</p>
@@ -49,10 +51,10 @@ const Footer = () => {
             </div>
           </div>
 
-          
+          {/* About & Policies */}
           <div>
-            <h4 className="text-base font-semibold text-gray-900 mb-5">About Kunjo Jewellers</h4>
-            <ul className="flex flex-col gap-3">
+            <h4 className="text-base font-semibold text-gray-900 mb-5">About Kunjo</h4>
+            <ul className="flex flex-col gap-3 mb-6">
               {aboutLinks.map((link, index) => (
                 <li key={index}>
                   <Link to={link.path} className="text-[14px] text-gray-500 hover:text-[#d4af37] transition-colors">
@@ -61,8 +63,19 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+            <h4 className="text-sm font-semibold text-gray-900 mb-3">Legal</h4>
+            <ul className="flex flex-col gap-2">
+              {policyLinks.map((link, index) => (
+                <li key={index}>
+                  <Link to={link.path} className="text-[13px] text-gray-400 hover:text-[#d4af37] transition-colors">
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
+          {/* Categories */}
           <div>
             <h4 className="text-base font-semibold text-gray-900 mb-5">Popular Categories</h4>
             <ul className="flex flex-col gap-3">
@@ -76,11 +89,9 @@ const Footer = () => {
             </ul>
           </div>
 
-         
+          {/* Store Details */}
           <div>
             <h4 className="text-base font-semibold text-gray-900 mb-5">Store Details</h4>
-            
-           
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                 <Headphones size={20} />
@@ -90,27 +101,23 @@ const Footer = () => {
                 <p className="text-lg font-medium text-gray-800 tracking-wide">01716-522922</p>
               </div>
             </div>
-
-           
             <div className="text-[14px] text-gray-500 leading-relaxed mb-3">
-              <span className="font-medium text-gray-700">Address:</span> Jamuna Future Park Lavel<br />
+              <span className="font-medium text-gray-700">Address:</span> Jamuna Future Park Level<br />
               02 Block A Shop No 28<br />
               Bashundhara Dhaka-1229
             </div>
-
             <div className="text-[14px] text-gray-500">
               <span className="font-medium text-gray-700">Email:</span> KunjoJewellers@gmail.com
             </div>
           </div>
 
-          
+          {/* Social Media */}
           <div>
             <h4 className="text-base font-semibold text-gray-900 mb-5">Follow Us</h4>
             <div className="flex items-center gap-4 text-gray-800">
               <a href="#" className="hover:text-[#d4af37] transition-colors">
                 <Facebook size={20} strokeWidth={1.5} />
               </a>
-             
               <a href="#" className="hover:text-[#d4af37] transition-colors">
                 <Music2 size={20} strokeWidth={1.5} /> 
               </a>
@@ -125,7 +132,7 @@ const Footer = () => {
 
         </div>
 
-        <div className="border-t border-gray-200 pt-6 mt-8 flex justify-center">
+        <div className="border-t border-gray-200 pt-6 mt-8 flex flex-col items-center gap-4">
           <p className="text-[13px] text-gray-500 text-center">
             &copy; 2026 All Rights Reserved By Kunjo Jewellers. Designed & Maintained By Imran Sadik.
           </p>

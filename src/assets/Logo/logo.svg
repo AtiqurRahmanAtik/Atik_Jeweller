@@ -12,8 +12,6 @@
     </style>
   </defs>
 
-  <rect width="500" height="500" fill="#050505" />
-
   <path d="M160,140 Q250,90 340,140 Q360,100 320,80 Q250,110 180,80 Q140,100 160,140 Z" fill="url(#goldGradient)" />
   
   <text x="50%" y="45%" text-anchor="middle" font-family="'Cinzel', serif" font-size="140" fill="url(#goldGradient)" font-weight="bold" letter-spacing="-5">

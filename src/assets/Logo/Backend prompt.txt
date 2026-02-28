@@ -1,0 +1,475 @@
+import { Router } from "express";
+
+import {
+
+  createCounter,
+
+  getAllCounters,
+
+  getCounterById,
+
+  getCountersByBranch,
+
+  updateCounter,
+
+  removeCounter,
+
+} from "./Counters.controller.js";
+
+import { authenticateToken } from "../../../middleware/authMiddleware.js"; 
+
+
+
+const CounterRoutes = Router();
+
+
+
+// Protect all routes with authentication middleware
+
+CounterRoutes.get("/", authenticateToken, getAllCounters);
+
+CounterRoutes.get("/:branch/get-all", authenticateToken, getCountersByBranch);
+
+CounterRoutes.get("/get-id/:id", authenticateToken, getCounterById);
+
+CounterRoutes.post("/post", authenticateToken, createCounter);
+
+CounterRoutes.put("/update/:id", authenticateToken, updateCounter);
+
+CounterRoutes.delete("/delete/:id", authenticateToken, removeCounter);
+
+
+
+export default CounterRoutes;
+
+
+
+
+
+
+
+import mongoose from "mongoose";
+
+const { Schema, model } = mongoose;
+
+
+
+const CounterSchema = Schema(
+
+  {
+
+    counterName: {
+
+      type: String,
+
+      required: [true, "Please provide the counter name"],
+
+    },
+
+    counterSerial: {
+
+      type: Number,
+
+      required: [true, "Please provide the counter serial"],
+
+      unique: true,
+
+    },
+
+    branch: {
+
+      type: String,
+
+      required: [true, "Please provide the branch"],
+
+    },
+
+  },
+
+  { timestamps: true }
+
+);
+
+
+
+const Counter = model("Counter", CounterSchema);
+
+
+
+export default Counter;
+
+
+
+
+
+
+
+import Counter from "./Counters.model.js";
+
+
+
+export async function getAllCounters(req, res) {
+
+  try {
+
+    const page = parseInt(req.query.page) || 1;
+
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+
+
+    const [result, totalCounters] = await Promise.all([
+
+      Counter.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
+
+      Counter.countDocuments()
+
+    ]);
+
+
+
+    res.status(200).json({
+
+      success: true,
+
+      data: result,
+
+      pagination: {
+
+        totalItems: totalCounters,
+
+        totalPages: Math.ceil(totalCounters / limit),
+
+        currentPage: page,
+
+        itemsPerPage: limit
+
+      }
+
+    });
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+
+
+
+
+export async function getCountersByBranch(req, res) {
+
+  const branch = req.params.branch;
+
+  try {
+
+    const page = parseInt(req.query.page) || 1;
+
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+
+
+    const [result, totalCounters] = await Promise.all([
+
+      Counter.find({ branch }).skip(skip).limit(limit).sort({ createdAt: -1 }),
+
+      Counter.countDocuments({ branch }) 
+
+    ]);
+
+
+
+    res.status(200).json({
+
+      success: true,
+
+      data: result,
+
+      pagination: {
+
+        totalItems: totalCounters,
+
+        totalPages: Math.ceil(totalCounters / limit),
+
+        currentPage: page,
+
+        itemsPerPage: limit
+
+      }
+
+    });
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+// Get counter by ID
+
+export async function getCounterById(req, res) {
+
+  const id = req.params.id;
+
+  try {
+
+    const result = await Counter.findById(id);
+
+    if (result) {
+
+      res.status(200).json(result);
+
+    } else {
+
+      res.status(404).json({ message: "Counter not found" });
+
+    }
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+
+
+// Create a new counter
+
+export async function createCounter(req, res) {
+
+  try {
+
+    const counterData = req.body;
+
+    const result = await Counter.create(counterData);
+
+    res.status(201).json(result);
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+
+
+// Update a counter by ID
+
+export async function updateCounter(req, res) {
+
+  const id = req.params.id;
+
+  const counterData = req.body;
+
+  try {
+
+    const result = await Counter.findByIdAndUpdate(id, counterData, {
+
+      new: true,
+
+    });
+
+    if (result) {
+
+      res.status(200).json(result);
+
+    } else {
+
+      res.status(404).json({ message: "Counter not found" });
+
+    }
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+
+
+// Remove a counter by ID
+
+export async function removeCounter(req, res) {
+
+  const id = req.params.id;
+
+  try {
+
+    const result = await Counter.findByIdAndDelete(id);
+
+    if (result) {
+
+      res.status(200).json({ message: "Counter deleted successfully" });
+
+    } else {
+
+      res.status(404).json({ message: "Counter not found" });
+
+    }
+
+  } catch (err) {
+
+    res.status(500).send({ error: err.message });
+
+  }
+
+}
+
+
+
+import { Router } from "express";
+
+
+
+import permissionRoutes from "../app/modules/Permission/permission.routes.js";
+
+import userRoutes from "../app/modules/User/Users.routes.js";
+
+import UserlogRoutes from "../app/modules/UserLog/UserLog.routes.js";
+
+import TransactionLogRoutes from "../app/modules/TransactionLog/TransactionLog.routes.js";
+
+import UserRoleRoutes from "../app/modules/UserRole/UserRoles.routes.js";
+
+
+
+
+
+
+
+
+
+// Used Controllers / Middleware
+
+import { getImageUrl } from "../config/space.js";
+
+import transactionLogger from "../middleware/transactionLogger.js";
+
+
+
+const routes = Router();
+
+
+
+// Middleware
+
+routes.use(transactionLogger);
+
+
+
+// Active Routes
+
+
+
+routes.use("/permissions", permissionRoutes);
+
+routes.use("/user", userRoutes);
+
+routes.use("/userlog", UserlogRoutes);
+
+routes.use("/transaction-logs", TransactionLogRoutes);
+
+routes.use("/userrole", UserRoleRoutes);
+
+
+
+routes.post("/get-image-url", getImageUrl);
+
+
+
+export default routes;
+
+
+
+
+
+I will give you one backend file as a template/style reference.
+
+
+
+
+
+
+
+Your task is to strictly follow the same structure, coding style, folder pattern, naming convention, logic flow, and response format.
+
+
+
+After that, I will tell you:
+
+
+
+
+
+
+
+Which new entity (e.g., Employee, Customer, Product, etc.)
+
+
+
+The purpose/use case of that entity
+
+
+
+You must then:
+
+
+
+
+
+
+
+Create the complete backend file for the new entity
+
+
+
+Keep it 100% consistent with the given template
+
+
+
+Use the same validations, error handling, async pattern, status codes, and comments style
+
+
+
+Change only entity-specific fields and logic
+
+
+
+Do not add extra features, explanations, or improvements
+
+
+
+Do not change architecture or introduce new patterns
+
+
+
+Output only the final backend code file.
+
+
+
+
+
+
+
+No extra text. No explanation. Give me all file name and main routes also 
+
+
+
+If something is unclear, assume the template behavior is correct and follow it exactly.
+
+
