@@ -63,7 +63,9 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+          
             <h4 className="text-sm font-semibold text-gray-900 mb-3">Legal</h4>
+           
             <ul className="flex flex-col gap-2">
               {policyLinks.map((link, index) => (
                 <li key={index}>

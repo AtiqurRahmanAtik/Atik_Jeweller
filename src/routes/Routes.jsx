@@ -24,6 +24,25 @@ import BannerCreate from "../pages/Ecommerce/BannerCreate/BannerCreate";
 import ThreeDotImage from "../pages/Ecommerce/ThreeDotImage/ThreeDotImage";
 import ProductCategory from "../pages/Ecommerce/ProductCategory/ProductCategory";
 import Products from "../pages/Ecommerce/Products/Products";
+import GoldPrice from "../pages/GoldPrice/GoldPrice";
+import ProductList from "../pages/Product/ProductList/ProductList";
+import AddProduct from "../pages/Product/AddProduct/AddProduct";
+import MetalProductCategory from "../pages/Product/MetalProductCategory/MetalProductCategory";
+import MyStocks from "../pages/MyStocks/MyStocks";
+import ReturnList from "../pages/Sales/ReturnList/ReturnList";
+import SalesList from "../pages/Sales/SalesList/SalesList";
+import PosSale from "../pages/Sales/PosSale/PosSale";
+import Sale from "../pages/Sales/Sale/Sale";
+import { MdOutlinePeople, MdOutlinePerson, MdOutlineReceiptLong } from "react-icons/md";
+import DueList from "../pages/Customer/DueList/DueList";
+import Customer from "../pages/Customer/Customer/Customer";
+import ArtisanPayment from "../pages/Order/ArtisanPayment/ArtisanPayment";
+import OrderList from "../pages/Order/OrderList/OrderList";
+import AddOrder from "../pages/Order/AddOrder/AddOrder";
+import MetalType from "../pages/Setting/MetalType/MetalType";
+import Purity from "../pages/Setting/Purity/Purity";
+import GoldCategory from "../pages/Setting/GoldCategory/GoldCategory";
+
 
 
 
@@ -95,6 +114,143 @@ export const router = createBrowserRouter([
         element: <PrivateRoot><Home/></PrivateRoot>,
       },
 
+      {
+        path: "goldPrice",
+        element: <PrivateRoot><GoldPrice/> </PrivateRoot>
+      },
+
+      {
+  path: "product",
+  children: [
+    {
+      path: "list",
+      element: (
+        <PrivateRoot>
+          <ProductList />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "add",
+      element: (
+        <PrivateRoot>
+          <AddProduct />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "category",
+      element: (
+        <PrivateRoot>
+          <MetalProductCategory />
+        </PrivateRoot>
+      ),
+    },
+  ],
+},
+
+ {
+        path: "myStocks",
+        element: <PrivateRoot><MyStocks/> </PrivateRoot>
+      },
+
+      // sales
+
+      {
+  path: "sales",
+  children: [
+    {
+      path: "sale",
+      element: (
+        <PrivateRoot>
+          <Sale />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "pos-sale",
+      element: (
+        <PrivateRoot>
+          <PosSale />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "list",
+      element: (
+        <PrivateRoot>
+          <SalesList />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "return-list",
+      element: (
+        <PrivateRoot>
+          <ReturnList />
+        </PrivateRoot>
+      ),
+    },
+  ],
+},
+
+{
+  path: "customer",
+  children: [
+    {
+      path: "customer",
+      element: (
+        <PrivateRoot>
+          <Customer />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "due-list",
+      element: (
+        <PrivateRoot>
+          <DueList />
+        </PrivateRoot>
+      ),
+    },
+  ],
+},
+
+{
+  path: "order",
+  children: [
+    {
+      path: "add-order",
+      element: (
+        <PrivateRoot>
+          <AddOrder />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "order-list",
+      element: (
+        <PrivateRoot>
+          <OrderList />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "artisan-payment",
+      element: (
+        <PrivateRoot>
+          <ArtisanPayment />
+        </PrivateRoot>
+      ),
+    },
+  ],
+},
+
+
+
+
+
+
 {
   path: "ecommerce",
   children: [
@@ -133,6 +289,39 @@ export const router = createBrowserRouter([
   ],
 },     
      
+
+
+
+{
+  path: "setting",
+  children: [
+    {
+      path: "metal-type",
+      element: (
+        <PrivateRoot>
+          <MetalType />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "purity",
+      element: (
+        <PrivateRoot>
+          <Purity />
+        </PrivateRoot>
+      ),
+    },
+      {
+      path: "GoldCategory",
+      element: (
+        <PrivateRoot>
+          <GoldCategory />
+        </PrivateRoot>
+      ),
+    }
+  ],
+},
+
     
       // --- Logout ---
       {

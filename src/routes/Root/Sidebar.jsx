@@ -7,49 +7,73 @@ import useMenuItems from "./MenuItems"; // Ensure correct import path
 import Logo from "../../assets/Logo/logo.png";
 import Logo_Dark from "../../assets/Logo/logo_dark.png"; 
 
+
 const AccordionItem = ({ item, isSidebarOpen, mode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
 
-    const getLinkClasses = (path) => {
-        const baseClasses = "flex p-3 my-1 rounded-md gap-3 items-center transition-colors";
-        // Dark mode: text-gray-300, hover:bg-gray-700
-        const textHoverClasses = "text-base-content dark:text-gray-300 hover:bg-base-content/10 dark:hover:bg-gray-700";
-        
-        if (location.pathname === path) {
-            // Active link uses primary color
-            return `bg-primary text-white ${baseClasses}`;
-        }
-        return `${textHoverClasses} ${baseClasses}`;
-    };
+    // Check if any child route is currently active
+    const isChildActive = item.list?.some(child => location.pathname === child.path);
+    // Determine if the parent should appear open/active
+    const isParentActive = isOpen || isChildActive;
 
     // --- RECURSIVE LOGIC START ---
     if (item.list) {
         return (
-            <li className="my-1">
+            <li className="my-2">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex justify-between items-center p-3 rounded-md text-base-content dark:text-gray-300 hover:bg-base-content/10 dark:hover:bg-gray-700 transition-colors"
+                    className={`w-full flex justify-between items-center p-3 rounded-xl shadow-sm transition-all relative overflow-hidden ${
+                        isParentActive 
+                            ? "bg-gradient-to-r from-[#df913e] to-primary text-white" 
+                            : "bg-white text-gray-700 hover:bg-orange-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    }`}
                 >
-                    <div className="flex items-center gap-3">
-                        {item.icon}
-                        {isSidebarOpen && <span className="font-medium text-sm">{item.title}</span>}
+                    {/* Active Left Indicator Bar */}
+                    {isParentActive && (
+                        <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-white rounded-r-md"></div>
+                    )}
+
+                    <div className="flex items-center gap-3 ml-1">
+                        {/* Icon Wrapper (Orange when inactive, White when active) */}
+                        <div className={`${isParentActive ? "text-white" : "text-primary dark:text-gray-300"}`}>
+                            {item.icon}
+                        </div>
+                        {isSidebarOpen && <span className="font-semibold text-sm">{item.title}</span>}
                     </div>
-                    {isSidebarOpen && <MdChevronRight className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />}
+                    
+                    {isSidebarOpen && (
+                        isParentActive ? (
+                            <div className="w-2 h-2 rounded-full bg-white mr-2"></div> // White dot when open (like your image)
+                        ) : (
+                            <MdChevronRight className="transition-transform text-gray-400" />
+                        )
+                    )}
                 </button>
                 
-                {/* Render Children Recursively */}
+                {/* Render Children */}
                 {isOpen && isSidebarOpen && (
-                    // Padding-left (pl-6) creates the indentation for nested levels automatically
-                    <ul className="pl-6 pt-1">
-                        {item.list.map((child) => (
-                            <AccordionItem 
-                                key={child.title} 
-                                item={child} 
-                                isSidebarOpen={isSidebarOpen} 
-                                mode={mode} 
-                            />
-                        ))}
+                    <ul className="mt-2 space-y-2">
+                        {item.list.map((child) => {
+                            const isChildCurrent = location.pathname === child.path;
+                            return (
+                                <li key={child.title} className="w-full">
+                                    <Link
+                                        to={child.path}
+                                        className={`flex p-3 ml-4 mr-1 rounded-xl gap-3 items-center transition-all ${
+                                            isChildCurrent 
+                                                ? "bg-white shadow-sm text-gray-800 font-semibold" 
+                                                : "text-gray-600 hover:bg-white/60 font-medium"
+                                        }`}
+                                    >
+                                        <div className="text-gray-500">
+                                            {child.icon}
+                                        </div>
+                                        <span className="text-sm">{child.title}</span>
+                                    </Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                 )}
             </li>
@@ -58,14 +82,26 @@ const AccordionItem = ({ item, isSidebarOpen, mode }) => {
     // --- RECURSIVE LOGIC END ---
 
     else {
+        // Flat Links (No children)
+        const isActive = location.pathname === item.path;
+        
         return (
-            <li>
+            <li className="my-2">
                 <Link
                     to={item.path}
-                    className={getLinkClasses(item.path)}
+                    className={`w-full flex p-3 rounded-xl shadow-sm transition-all items-center gap-3 relative overflow-hidden ${
+                        isActive 
+                            ? "bg-gradient-to-r from-[#df913e] to-primary text-white" 
+                            : "bg-white text-gray-700 hover:bg-orange-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    }`}
                 >
-                    {item.icon}
-                    {isSidebarOpen && <span className="font-medium text-sm">{item.title}</span>}
+                    {isActive && (
+                        <div className="absolute left-0 top-1/4 bottom-1/4 w-1 bg-white rounded-r-md"></div>
+                    )}
+                    <div className={`ml-1 ${isActive ? "text-white" : "text-primary dark:text-gray-300"}`}>
+                        {item.icon}
+                    </div>
+                    {isSidebarOpen && <span className="font-semibold text-sm">{item.title}</span>}
                 </Link>
             </li>
         );
@@ -76,12 +112,13 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, mode }) => {
     // Get menu items
     const menuItems = useMenuItems();
     
+    // Using your 'secondary' background color for the main sidebar
     const sidebarClasses = `
         fixed top-0 left-0 h-full shadow-lg z-30 transition-all duration-300 flex flex-col
-        bg-base-100 dark:bg-gray-800 
+        bg-secondary dark:bg-gray-900 
         ${isSidebarOpen
             ? 'w-64 translate-x-0' 
-            : 'w-64 -translate-x-full md:w-20 md:translate-x-0'
+            : 'w-64 -translate-x-full md:w-[85px] md:translate-x-0'
         }
     `;
 
@@ -97,14 +134,30 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, mode }) => {
 
             {/* Sidebar Container */}
             <div className={sidebarClasses}>
-                <div className={`flex items-center justify-center p-8 border-b h-[65px] flex-shrink-0 my-5 transition-colors duration-300 
-                    border-base-content/10 dark:border-gray-700 
+                
+                {/* Custom Top Header Card (Matching your image) */}
+                <div className={`m-3 mt-4 mb-2 p-3 rounded-xl shadow-md transition-all flex items-center gap-3 
+                    bg-gradient-to-r from-[#e8ac46] via-[#d78b2e] to-primary text-white
+                    ${!isSidebarOpen && 'justify-center p-2'}
                 `}>
-                    <img src={currentLogo} alt="Logo" className={`transition-all duration-300 ${isSidebarOpen ? 'w-24' : 'w-10'}`} />
+                    <div className="bg-white p-1 rounded-lg flex-shrink-0 shadow-sm">
+                        <img 
+                            src={currentLogo} 
+                            alt="Logo" 
+                            className={`transition-all duration-300 object-contain ${isSidebarOpen ? 'w-10 h-10' : 'w-8 h-8'}`} 
+                        />
+                    </div>
+                    
+                    {isSidebarOpen && (
+                        <div className="flex flex-col truncate">
+                            <span className="font-bold text-[15px] leading-tight text-white drop-shadow-sm">Jewellery Software</span>
+                            <span className="text-xs text-white/90 font-medium">Owner</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Menu */}
-                <nav className="flex-1 overflow-y-auto p-2">
+                <nav className="flex-1 overflow-y-auto px-3 py-2 scrollbar-hide">
                     <ul>
                         {menuItems.map((item) => (
                             <AccordionItem 

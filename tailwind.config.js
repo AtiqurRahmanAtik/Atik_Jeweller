@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#66cc00",
-        secondary: "#336600",
+        primary: "#cd731c",
+        secondary: "#fdeecd",
 
         // --- NEW Jewellery Brand Colors ---
         'jewel-gold': {
@@ -51,8 +51,8 @@ module.exports = {
 
         // --- NEW THEME: SmartJeweler ---
         jewellery: {
-          "primary": "#D4AF37",      // Gold
-          "secondary": "#B49028",    // Darker Gold
+          "primary": "#cd731c",      // Gold
+          "secondary": "#fdeecd",    // Darker Gold
           "accent": "#F8E28B",       // Light Gold Highlight
           "neutral": "#050505",      // Deep Black bg
           "base-100": "#000000",     // Main background

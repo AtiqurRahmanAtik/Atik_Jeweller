@@ -2,11 +2,25 @@
 import {
   MdDashboard,
   MdLogout,
+  MdOutlineAddBox,
+  MdOutlineAddShoppingCart,
+  MdOutlineAssignmentReturn,
   MdOutlineCategory,
   MdOutlineImage,
+  MdOutlineInventory,
+  MdOutlineList,
+  MdOutlineListAlt,
   MdOutlineMoreHoriz,
+  MdOutlinePayments,
+  MdOutlinePeople,
+  MdOutlinePerson,
   MdOutlinePhotoSizeSelectActual,
+  MdOutlinePointOfSale,
+  MdOutlineReceiptLong,
+  MdOutlineSettings,
   MdOutlineShoppingBag,
+  MdOutlineShoppingCart,
+  MdOutlineVerified,
 
 } from "react-icons/md";
 import PrivateRoot from "./PrivateRoot";
@@ -19,6 +33,107 @@ const useMenuItems = () => {
       path: "/dashboard",
       icon: <MdDashboard className="text-lg" />,
     },
+    {
+      title: "GoldPrice",
+      path : "/goldPrice",
+       icon: <MdDashboard className="text-lg" />,
+    },
+
+    {
+  title: "Product",
+  icon: <MdOutlineInventory className="text-lg" />,
+  list: [
+    {
+      title: "Product list",
+      path: "/product/list",
+      icon: <MdOutlineList className="text-lg" />,
+    },
+    {
+      title: "Add Product",
+      path: "/product/add",
+      icon: <MdOutlineAddBox className="text-lg" />,
+    },
+    {
+      title: "Category",
+      path: "/product/category",
+      icon: <MdOutlineCategory className="text-lg" />,
+    },
+  ],
+},
+
+ {
+      title: "MyStocks",
+      path : "/myStocks",
+       icon: <MdDashboard className="text-lg" />,
+    },
+
+    {
+  title: "Sales",
+  icon: <MdOutlinePointOfSale className="text-lg" />,
+  list: [
+    {
+      title: "Sale",
+      path: "/sales/sale",
+      icon: <MdOutlineShoppingCart className="text-lg" />,
+    },
+    {
+      title: "Pos Sale",
+      path: "/sales/pos-sale",
+      icon: <MdOutlinePointOfSale className="text-lg" />,
+    },
+    {
+      title: "Sales List",
+      path: "/sales/list",
+      icon: <MdOutlineList className="text-lg" />,
+    },
+    {
+      title: "Return List",
+      path: "/sales/return-list",
+      icon: <MdOutlineAssignmentReturn className="text-lg" />,
+    },
+  ],
+},
+
+{
+  title: "Customer",
+  icon: <MdOutlinePeople className="text-lg" />,
+  list: [
+    {
+      title: "Customer",
+      path: "/customer/customer",
+      icon: <MdOutlinePerson className="text-lg" />,
+    },
+    {
+      title: "Due List",
+      path: "/customer/due-list",
+      icon: <MdOutlineReceiptLong className="text-lg" />,
+    },
+  ],
+},
+
+{
+  title: "Order",
+  icon: <MdOutlineShoppingCart className="text-lg" />,
+  list: [
+    {
+      title: "Add Order",
+      path: "/order/add-order",
+      icon: <MdOutlineAddShoppingCart className="text-lg" />,
+    },
+    {
+      title: "Order List",
+      path: "/order/order-list",
+      icon: <MdOutlineListAlt className="text-lg" />,
+    },
+    {
+      title: "artisan Payment",
+      path: "/order/artisan-payment",
+      icon: <MdOutlinePayments className="text-lg" />,
+    },
+  ],
+},
+
+    
  
 {
   title: "Ecommerce",
@@ -46,6 +161,30 @@ const useMenuItems = () => {
     },
   ],
 },
+
+{
+  title: "Setting",
+  icon: <MdOutlineSettings className="text-lg" />,
+  list: [
+    {
+      title: "Metal Type",
+      path: "/setting/metal-type",
+      icon: <MdOutlineCategory className="text-lg" />,
+    },
+    {
+      title: "Purity",
+      path: "/setting/purity",
+      icon: <MdOutlineVerified className="text-lg" />,
+    },
+    
+     {
+      title: "GoldCategory",
+      path: "/setting/GoldCategory",
+      icon: <MdOutlineVerified className="text-lg" />,
+    },
+  ],
+},
+
 
 
 {
