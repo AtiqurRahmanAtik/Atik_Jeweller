@@ -13,7 +13,7 @@ const GoldCategory = () => {
     deleteGoldCategory
   } = useGoldCategories();
 
-  const { branch } = useAuth();
+  // const { branch } = useAuth();
 
   // State matching MetalType structure
   const [formData, setFormData] = useState({ categoryName: "", categoryImage: "" });
@@ -76,7 +76,7 @@ const GoldCategory = () => {
   return (
     <div className="p-10 bg-secondary min-h-screen">
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-bold">Gold Categories</h1>
+        <h1 className="text-2xl font-bold">Product Categories</h1>
 
         <button
           onClick={handleAdd}
@@ -96,7 +96,7 @@ const GoldCategory = () => {
               <th className="p-2 border border-white/20">#</th>
               <th className="p-2 border border-white/20">Image</th>
               <th className="p-2 border border-white/20">Category Name</th>
-              <th className="p-2 border border-white/20">Branch</th>
+             
               <th className="p-2 border border-white/20">Action</th>
             </tr>
           </thead>
@@ -113,7 +113,7 @@ const GoldCategory = () => {
                   />
                 </td>
                 <td className="border p-2 font-medium">{item.categoryName}</td>
-                <td className="border p-2">{item.branch}</td>
+                
                 <td className="border p-2 flex gap-2 justify-center">
                   <button
                     onClick={() => handleEdit(item)}

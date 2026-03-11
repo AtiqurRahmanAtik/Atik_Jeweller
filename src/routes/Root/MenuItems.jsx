@@ -178,7 +178,7 @@ const useMenuItems = () => {
     },
     
      {
-      title: "GoldCategory",
+      title: "Product Category",
       path: "/setting/GoldCategory",
       icon: <MdOutlineVerified className="text-lg" />,
     },
