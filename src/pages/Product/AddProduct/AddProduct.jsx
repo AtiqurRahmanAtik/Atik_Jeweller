@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useGoldProducts } from "../../../Hook/useGoldProducts"; 
 import useAuth from "../../../Hook/useAuth"; 
 import { Plus, List, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const initialFormState = {
   productImage: "",
@@ -26,11 +27,14 @@ const initialFormState = {
   productDescription: "",
 };
 
+
 // Data extracted from your provided images (add1, add2, add3)
 const CATEGORY_OPTIONS = ["Ear Rings", "Bracelet", "Silver Bar", "Nose pin", "Fingers Ring", "Necklace", "Gold Bar", "Raw Gold"];
 const STOCK_OPTIONS = ["Fine Stock", "Raw Material", "Customized Order Stock", "Mortgage Stock", "Production", "Artisan Stock", "Wholesale"];
 const METAL_OPTIONS = ["GOLD", "DESI GOLD", "GOLD BAR", "SILVER", "PLATINUM", "COPPER", "DIAMOND"];
 const PURITY_OPTIONS = ["24K | 99.9", "22K | 91.6", "21K | 87.5", "18K | 75.0"];
+
+
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -38,10 +42,12 @@ const AddProduct = () => {
   const { createGoldProduct, loading } = useGoldProducts();
   const [formData, setFormData] = useState(initialFormState);
 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,12 +73,13 @@ const AddProduct = () => {
     if (result) {
       alert("Product added successfully!");
       setFormData(initialFormState);
-      navigate("/product-list"); // Redirect to list after success
+      navigate("/product/list"); // Redirect to list after success
     } else {
       alert("Failed to add product. Please check console for errors.");
     }
   };
 
+  
   return (
     <div className="p-4 md:p-8 bg-secondary min-h-screen font-sans">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -83,12 +90,12 @@ const AddProduct = () => {
             <h2 className="text-xl font-bold text-gray-800">Add Product</h2>
             <p className="text-xs text-gray-400 mt-1">Branch: <span className="text-primary font-bold">{branch}</span></p>
           </div>
-          <button 
-            onClick={() => navigate("/product-list")}
+          <Link to={'/product/list'} 
+            
             className="bg-primary text-white px-4 py-2 rounded-md hover:brightness-110 transition-all font-medium flex items-center gap-2 text-sm shadow-sm"
           >
             <List size={16} /> View All
-          </button>
+          </Link>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

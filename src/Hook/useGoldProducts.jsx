@@ -9,6 +9,7 @@ export const useGoldProducts = () => {
   const { branch } = useAuth();
 
   const [goldProducts, setGoldProducts] = useState([]);
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -16,11 +17,13 @@ export const useGoldProducts = () => {
   });
   const [loading, setLoading] = useState(false);
 
+
   // States for Dynamic Dropdowns
   const [categories, setCategories] = useState([]);
   const [stocks, setStocks] = useState([]);
   const [metals, setMetals] = useState([]);
   const [purities, setPurities] = useState([]);
+
 
   // Fetch Gold Products
   const fetchGoldProducts = useCallback(async (page = 1, limit = 10) => {
@@ -101,6 +104,8 @@ export const useGoldProducts = () => {
       setLoading(false);
     }
   };
+
+  
 
   return {
     goldProducts,

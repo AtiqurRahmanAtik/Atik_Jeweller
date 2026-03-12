@@ -73,6 +73,8 @@ const GoldCategory = () => {
     }
   };
 
+  
+
   return (
     <div className="p-10 bg-secondary min-h-screen">
       <div className="flex justify-between mb-6">

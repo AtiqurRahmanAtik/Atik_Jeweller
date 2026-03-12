@@ -4,10 +4,11 @@ import {
   ChevronDown, Filter, Loader2, Image as ImageIcon 
 } from 'lucide-react';
 import { useGoldProducts } from "../../../Hook/useGoldProducts"; // Adjust path as needed
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ProductList = () => {
   const navigate = useNavigate();
+
   const { 
     goldProducts, pagination, loading, 
     categories, stocks, metals, purities,
@@ -21,11 +22,13 @@ const ProductList = () => {
   const [selectedMetal, setSelectedMetal] = useState("");
   const [selectedPurity, setSelectedPurity] = useState("");
 
+
   // Fetch Data on Mount
   useEffect(() => {
     fetchGoldProducts(1, 10);
     fetchFilters(); // Load dynamic dropdown options
   }, [fetchGoldProducts, fetchFilters]);
+
 
   const handlePageChange = (page) => {
     fetchGoldProducts(page, 10);
@@ -50,6 +53,8 @@ const ProductList = () => {
     return matchesSearch && matchesCategory && matchesStock && matchesMetal && matchesPurity;
   }) : [];
 
+
+
   return (
     <div className="bg-secondary min-h-screen p-4 md:p-8 font-sans text-slate-800">
       
@@ -63,13 +68,12 @@ const ProductList = () => {
           <button className="p-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-all shadow-sm">
             <LayoutGrid size={20} />
           </button>
-          <button 
-            onClick={() => navigate('/add-product')}
+          <Link to={'/product/add'}
             className="flex flex-1 md:flex-none items-center justify-center gap-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-bold transition-transform active:scale-95 shadow-lg shadow-primary/20"
           >
             <Plus size={18} />
             Add Product
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -140,10 +144,11 @@ const ProductList = () => {
         </div>
 
         {/* Categories Tab Bar */}
-        <div className="px-5 py-3 flex overflow-x-auto gap-2 hide-scrollbar bg-white items-center">
+        <div className="px-5 py-4 flex flex-wrap gap-3 bg-white items-center">
+          
           <button
             onClick={() => setActiveCategory('All')}
-            className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
               activeCategory === 'All' 
                 ? 'bg-primary text-white shadow-md' 
                 : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -156,21 +161,28 @@ const ProductList = () => {
             <button
               key={cat._id}
               onClick={() => setActiveCategory(cat.categoryName)}
-              className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 activeCategory === cat.categoryName 
                   ? 'bg-primary text-white shadow-md' 
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
               {/* Optional: if your category has an image, render it */}
-              {cat.categoryImage && <img src={cat.categoryImage} alt="" className="w-4 h-4 rounded-full" />}
+              {cat.categoryImage && (
+                <img 
+                  src={cat.categoryImage} 
+                  alt="" 
+                  className="w-4 h-4 rounded-full object-cover" 
+                />
+              )}
               {cat.categoryName}
             </button>
           ))}
+          
         </div>
       </div>
 
-      {/* --- Table Section --- */}
+      {/* --- Table Section --- */}-
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center">

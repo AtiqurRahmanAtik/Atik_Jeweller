@@ -34,10 +34,11 @@ const useMenuItems = () => {
       icon: <MdDashboard className="text-lg" />,
     },
     {
-      title: "GoldPrice",
+      title: "Gold Price",
       path : "/goldPrice",
        icon: <MdDashboard className="text-lg" />,
     },
+     
 
     {
   title: "Product",
@@ -61,11 +62,7 @@ const useMenuItems = () => {
   ],
 },
 
- {
-      title: "MyStocks",
-      path : "/myStocks",
-       icon: <MdDashboard className="text-lg" />,
-    },
+
 
     {
   title: "Sales",
@@ -166,6 +163,11 @@ const useMenuItems = () => {
   title: "Setting",
   icon: <MdOutlineSettings className="text-lg" />,
   list: [
+     {
+      title: "Stocks",
+      path : "/myStocks",
+       icon: <MdDashboard className="text-lg" />,
+    },
     {
       title: "Metal Type",
       path: "/setting/metal-type",

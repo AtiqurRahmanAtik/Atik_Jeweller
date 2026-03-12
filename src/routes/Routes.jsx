@@ -118,6 +118,8 @@ export const router = createBrowserRouter([
         path: "goldPrice",
         element: <PrivateRoot><GoldPrice/> </PrivateRoot>
       },
+     
+
 
       {
   path: "product",

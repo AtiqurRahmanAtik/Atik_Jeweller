@@ -7,6 +7,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/gold-categories`;
 
 export const useGoldCategories = () => {
 
+
   const { branch } = useAuth();
   const [goldCategories, setGoldCategories] = useState([]);
   const [pagination, setPagination] = useState({});
@@ -15,6 +16,7 @@ export const useGoldCategories = () => {
   // GET ALL BY BRANCH
   const fetchGoldCategories = useCallback(async (page = 1, limit = 10) => {
     if (!branch) return;
+    
     try {
       setLoading(true);
       const res = await axios.get(`${API}/${branch}/get-all?page=${page}&limit=${limit}`);
