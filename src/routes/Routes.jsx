@@ -22,7 +22,7 @@ import RefundPolicy from "../pages/RefundPolicy/RefundPolicy";
 
 import BannerCreate from "../pages/Ecommerce/BannerCreate/BannerCreate";
 import ThreeDotImage from "../pages/Ecommerce/ThreeDotImage/ThreeDotImage";
-import ProductCategory from "../pages/Ecommerce/ProductCategory/ProductCategory";
+
 import Products from "../pages/Ecommerce/Products/Products";
 import GoldPrice from "../pages/GoldPrice/GoldPrice";
 import ProductList from "../pages/Product/ProductList/ProductList";
@@ -42,6 +42,9 @@ import AddOrder from "../pages/Order/AddOrder/AddOrder";
 import MetalType from "../pages/Setting/MetalType/MetalType";
 import Purity from "../pages/Setting/Purity/Purity";
 import GoldCategory from "../pages/Setting/GoldCategory/GoldCategory";
+import ProductDetails from "../pages/ProductDetails/ProductDetails";
+import FeaturedProducts from "../components/Homepage/FeaturedProducts";
+import HomePage from "../pages/HomePage/HomePage";
 
 
 
@@ -64,10 +67,23 @@ export const router = createBrowserRouter([
       
 
       // Navbar routes
+{
+    path: "/",
+    element: <NavHome />, // NavHome stays on the screen always
+    children: [
       {
-        path: "/",
-        element: <NavHome/>
+        path: "/", // When the user is at the root URL
+        element: <HomePage />, // Show all the banners and sliders
       },
+      {
+        path: "product/:id", // When the user clicks Quick View
+        element: <ProductDetails /> // Show ONLY the product details
+      }
+    ]
+  }
+,
+
+
       {
         path: "/shop",
         element: <Shop/>
@@ -272,14 +288,7 @@ export const router = createBrowserRouter([
         </PrivateRoot>
       ),
     },
-    {
-      path: "product-category",
-      element: (
-        <PrivateRoot>
-          <ProductCategory />
-        </PrivateRoot>
-      ),
-    },
+  
     {
       path: "products",
       element: (

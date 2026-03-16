@@ -7,11 +7,25 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/gold-categories`;
 
 export const useGoldCategories = () => {
 
-
   const { branch } = useAuth();
   const [goldCategories, setGoldCategories] = useState([]);
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // GET ALL GOLD CATEGORIES (No branch filter)
+  const fetchAllGoldCategories = useCallback(async (page = 1, limit = 10) => {
+    try {
+      setLoading(true);
+      // Matches backend: GET /gold-categories/
+      const res = await axios.get(`${API}/?page=${page}&limit=${limit}`);
+      setGoldCategories(res.data.data);
+      setPagination(res.data.pagination);
+    } catch (err) {
+      console.error("Fetch All Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // GET ALL BY BRANCH
   const fetchGoldCategories = useCallback(async (page = 1, limit = 10) => {
@@ -19,6 +33,7 @@ export const useGoldCategories = () => {
     
     try {
       setLoading(true);
+      // Matches backend: GET /gold-categories/:branch/get-all
       const res = await axios.get(`${API}/${branch}/get-all?page=${page}&limit=${limit}`);
       setGoldCategories(res.data.data);
       setPagination(res.data.pagination);
@@ -29,14 +44,13 @@ export const useGoldCategories = () => {
     }
   }, [branch]);
 
-
   // CREATE
   const createGoldCategory = async (categoryData) => {
     try {
       setLoading(true);
       const res = await axios.post(`${API}/post`, {
         ...categoryData,
-        branch
+        branch: categoryData.branch || branch
       });
       return res.data;
     } catch (err) {
@@ -47,14 +61,13 @@ export const useGoldCategories = () => {
     }
   };
 
-
   // UPDATE
   const updateGoldCategory = async (id, categoryData) => {
     try {
       setLoading(true);
       const res = await axios.put(`${API}/update/${id}`, {
         ...categoryData,
-        branch
+        branch: categoryData.branch || branch
       });
       return res.data;
     } catch (err) {
@@ -64,7 +77,6 @@ export const useGoldCategories = () => {
       setLoading(false);
     }
   };
-
 
   // DELETE
   const deleteGoldCategory = async (id) => {
@@ -80,11 +92,11 @@ export const useGoldCategories = () => {
     }
   };
   
-
   return {
     goldCategories,
     pagination,
     loading,
+    fetchAllGoldCategories,
     fetchGoldCategories,
     createGoldCategory,
     updateGoldCategory,

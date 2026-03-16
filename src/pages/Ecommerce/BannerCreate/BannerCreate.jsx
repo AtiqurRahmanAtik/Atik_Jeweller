@@ -1,176 +1,258 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { MdOutlineImage, MdNumbers, MdLink, MdStorefront, MdCloudUpload } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { useBanners } from "../../../Hook/useBanners";
+import { Plus, Edit, Trash2 } from "lucide-react";
 
 const BannerCreate = () => {
+  const {
+    banners,
+    pagination,
+    loading,
+    fetchBanners,
+    createBanner,
+    updateBanner,
+    deleteBanner,
+  } = useBanners();
+
+  // Form States for Modal
   const [formData, setFormData] = useState({
-    bannerNumber: "",
     bannerName: "",
     bannerUrl: "",
-    bannerPhoto: "",
-    branch: "",
   });
+  const [editId, setEditId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch data on load
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
+
+  // Handle Input Changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  // OPEN ADD MODAL
+  const handleAdd = () => {
+    setFormData({ bannerName: "", bannerUrl: "" });
+    setEditId(null);
+    setIsModalOpen(true);
+  };
+
+  // OPEN EDIT MODAL
+  const handleEdit = (item) => {
+    setFormData({
+      bannerName: item.bannerName,
+      bannerUrl: item.bannerUrl,
+    });
+    setEditId(item._id);
+    setIsModalOpen(true);
+  };
+
+  // SUBMIT FORM
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Banner Data Submitted:", formData);
-    
-    try {
-      const res = await axios.post("http://localhost:8000/api/banners/post", formData);
-      console.log(res.data);
-      alert("Banner Created Successfully!");
-    } catch (err) {
-      console.error(err);
+    let success;
+    if (editId) {
+      success = await updateBanner(editId, formData);
+    } else {
+      success = await createBanner(formData);
+    }
+
+    if (success) {
+      setIsModalOpen(false);
+      setFormData({ bannerName: "", bannerUrl: "" });
+      setEditId(null);
+      fetchBanners(pagination.currentPage);
     }
   };
 
+  // DELETE
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this banner?")) return;
+    const success = await deleteBanner(id);
+    if (success) fetchBanners(pagination.currentPage);
+  };
+
+
+  
   return (
-    <div className="min-h-screen bg-secondary py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            Create New Banner
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Fill in the details below to add a new promotional banner to the system.
-          </p>
+    <div className="p-6 md:p-10 bg-white min-h-screen font-sans">
+      
+      {/* Header Section matching the image */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-[#1e293b]">
+          Manage Banners
+        </h1>
+        <button
+          onClick={handleAdd}
+          className="bg-[#dcae3d] text-white px-5 py-2.5 rounded hover:bg-[#c99e35] transition-colors shadow-sm flex items-center gap-2 font-medium text-sm"
+        >
+          <Plus size={18} strokeWidth={2} /> Add Banner
+        </button>
+      </div>
+
+      {/* Table Section matching the image UI */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {loading ? (
+          <div className="text-center py-10 text-gray-500 font-medium">Loading Banners...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              
+              {/* Table Header */}
+              <thead className="bg-[#f8f9fc] border-b border-gray-200">
+                <tr>
+                  <th className="px-8 py-4 text-[13px] font-bold text-gray-600 uppercase tracking-wider">
+                    IMAGE
+                  </th>
+                  <th className="px-6 py-4 text-[13px] font-bold text-gray-600 uppercase tracking-wider">
+                    BANNER NAME
+                  </th>
+                  <th className="px-6 py-4 text-[13px] font-bold text-gray-600 uppercase tracking-wider text-center">
+                    ACTIONS
+                  </th>
+                </tr>
+              </thead>
+
+              {/* Table Body */}
+              <tbody className="divide-y divide-gray-100">
+                {banners?.length > 0 ? (
+                  banners.map((item) => (
+                    <tr key={item._id} className="hover:bg-gray-50/50 transition-colors">
+                      
+                      {/* Image Column */}
+                      <td className="px-8 py-4 whitespace-nowrap">
+                        <img
+                          src={item.bannerUrl}
+                          alt={item.bannerName}
+                          className="h-14 w-14 object-cover rounded shadow-sm border border-gray-100 bg-white"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/150?text=No+Image";
+                          }}
+                        />
+                      </td>
+
+                      {/* Title Column */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-gray-800 font-medium text-[15px]">{item.bannerName}</span>
+                      </td>
+
+                      {/* Actions Column (Blue Edit / Red Delete) */}
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-4">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="text-[#3b82f6] hover:text-blue-700 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit size={18} strokeWidth={2} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="text-[#ef4444] hover:text-red-700 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={18} strokeWidth={2} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-10 text-center text-gray-400 italic">
+                      No banners found. Click "Add Banner" to create one.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Pagination Controls */}
+      {pagination?.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            disabled={pagination.currentPage === 1 || loading}
+            onClick={() => fetchBanners(pagination.currentPage - 1)}
+            className="border border-gray-300 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-50 px-4 py-1.5 rounded font-medium transition-colors shadow-sm text-sm"
+          >
+            Prev
+          </button>
+          <span className="font-medium text-sm text-gray-700">
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </span>
+          <button
+            disabled={pagination.currentPage === pagination.totalPages || loading}
+            onClick={() => fetchBanners(pagination.currentPage + 1)}
+            className="border border-gray-300 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-50 px-4 py-1.5 rounded font-medium transition-colors shadow-sm text-sm"
+          >
+            Next
+          </button>
         </div>
+      )}
 
-        {/* Form Card */}
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+      {/* CREATE/UPDATE MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-bold mb-6 text-[#1e293b]">
+              {editId ? "Edit Banner" : "Add New Banner"}
+            </h2>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Banner Number */}
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Banner Number
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MdNumbers className="text-xl text-gray-400 group-focus-within:text-primary transition-colors" />
-                  </div>
-                  <input
-                    type="number"
-                    name="bannerNumber"
-                    required
-                    placeholder="e.g. 101"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 text-gray-800"
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Banner Name */}
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Banner Name
                 </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MdOutlineImage className="text-xl text-gray-400 group-focus-within:text-primary transition-colors" />
-                  </div>
-                  <input
-                    type="text"
-                    name="bannerName"
-                    required
-                    placeholder="Winter Collection 2026"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 text-gray-800"
-                    onChange={handleChange}
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="bannerName"
+                  placeholder="e.g. Special Offer Banner"
+                  value={formData.bannerName}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2.5 rounded focus:outline-none focus:border-[#dcae3d] focus:ring-1 focus:ring-[#dcae3d] transition-all text-sm"
+                  required
+                />
               </div>
-            </div>
 
-            {/* Banner URL */}
-            <div className="relative">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Redirection URL (Link)
-              </label>
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MdLink className="text-xl text-gray-400 group-focus-within:text-primary transition-colors" />
-                </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Banner Image URL
+                </label>
                 <input
                   type="url"
                   name="bannerUrl"
-                  required
-                  placeholder="https://kunjo.com/offers/winter"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 text-gray-800"
+                  placeholder="https://example.com/image.jpg"
+                  value={formData.bannerUrl}
                   onChange={handleChange}
+                  className="w-full border border-gray-300 p-2.5 rounded focus:outline-none focus:border-[#dcae3d] focus:ring-1 focus:ring-[#dcae3d] transition-all text-sm"
+                  required
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Branch */}
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Branch Location
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MdStorefront className="text-xl text-gray-400 group-focus-within:text-primary transition-colors" />
-                  </div>
-                  <select
-                    name="branch"
-                    required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-gray-800 appearance-none bg-white"
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Branch</option>
-                    <option value="Dhaka">Dhaka (JFP)</option>
-                    <option value="Chittagong">Chittagong</option>
-                    <option value="Sylhet">Sylhet</option>
-                  </select>
-                </div>
+              <div className="flex justify-end gap-3 mt-8">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gray-100 text-gray-700 px-5 py-2.5 rounded font-semibold text-sm hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-[#dcae3d] text-white px-6 py-2.5 rounded font-semibold text-sm hover:bg-[#c99e35] transition-colors shadow-sm disabled:opacity-70"
+                >
+                  {loading ? "Saving..." : "Save Banner"}
+                </button>
               </div>
-
-              {/* Banner Photo URL/Input */}
-              <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Banner Photo URL
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <MdCloudUpload className="text-xl text-gray-400 group-focus-within:text-primary transition-colors" />
-                  </div>
-                  <input
-                    type="text"
-                    name="bannerPhoto"
-                    required
-                    placeholder="Paste image hosting link"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 text-gray-800"
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-4">
-              <button
-                type="submit"
-                className="w-full bg-primary hover:brightness-110 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2"
-              >
-                <span>Create Banner</span>
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-
-        {/* Footer info */}
-        <p className="mt-6 text-center text-xs text-gray-400 uppercase tracking-widest">
-          Kunjo Jewellers Admin Portal &bull; 2026
-        </p>
-      </div>
+      )}
     </div>
   );
 };

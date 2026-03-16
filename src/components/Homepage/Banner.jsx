@@ -1,99 +1,66 @@
-
-
+import React, { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-
-
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import { useEffect } from 'react';
-import axios from 'axios';
-import { useState } from 'react';
 
 const Banner = () => {
-  
-  const sliderData = [
-    {
-      id: 1,
-      image: '/HomeBan.jpg', 
-      alt: 'Kunjo Jewellers Exclusive Wedding Jewellery',
-    },
-    {
-      id: 2,
-     
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=1600', 
-      alt: 'Luxury Gold Collection',
-    },
-    {
-      id: 3,
-      
-      image: 'https://images.unsplash.com/photo-1599643478524-fb66f70a00eb?auto=format&fit=crop&q=80&w=1600', 
-      alt: 'Diamond Necklace Collection',
-    },
-    {
-      id: 4,
-      
-      image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1600', 
-      alt: 'Bridal Jewellery Set',
-    },
-  ];
+  const [banners, setBanners] = useState([]);
 
-  const [banner, SetBanner] = useState([]);
-  console.log("Banner Data : ", banner);
-  
+  const API_URL = process.env.REACT_APP_BACKEND_URL
+    ? `${process.env.REACT_APP_BACKEND_URL}/banners/`
+    : "http://localhost:8000/api/banners/";
 
+  const getBanners = useCallback(async () => {
+    try {
+      const res = await axios.get(API_URL);
+      if (res.data?.success) {
+        setBanners(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching banners:", error);
+    }
+  }, [API_URL]);
 
-  const getBanner = async()=>{
+  useEffect(() => {
+    getBanners();
+  }, [getBanners]);
 
-     const res = await axios.get("http://localhost:8000/api/banners/");
-
-     SetBanner(res.data)
-
-     return res.data;
-
+  if (!banners.length) {
+    return (
+      <div className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] bg-gray-100 flex items-center justify-center animate-pulse">
+        <span className="text-gray-400 font-medium">Loading Banners...</span>
+      </div>
+    );
   }
-
-  
-
-    useEffect(()=>{
-      
-      getBanner();
-     
-
-    })
-  
-
-
 
   return (
     <div className="w-full bg-gray-50">
       <Swiper
         spaceBetween={0}
         centeredSlides={true}
-        loop={true}
+        loop={banners.length > 1}
         autoplay={{
-          delay: 3500, 
-         
+          delay: 3500,
+          disableOnInteraction: false,
         }}
-        pagination={{
-          clickable: true,
-         
-        }}
+        pagination={{ clickable: true }}
         navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        
         className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]"
       >
-        {sliderData.map((slide) => (
-          <SwiperSlide key={slide.id}>
+        {banners.map((slide) => (
+          <SwiperSlide key={slide._id}>
             <div className="w-full h-full relative">
               <img
-                src={slide.image}
-                alt={slide.alt}
+                src={slide.bannerUrl}
+                alt={slide.bannerName || "Promotional Banner"}
                 className="w-full h-full object-cover object-center"
+                onError={(e) => {
+                  e.target.src = "https://placehold.co/1600x600?text=Image+Not+Found";
+                }}
               />
             </div>
           </SwiperSlide>

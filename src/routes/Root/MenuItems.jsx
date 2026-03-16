@@ -146,11 +146,7 @@ const useMenuItems = () => {
       path: "/ecommerce/three-dot-image",
       icon: <MdOutlineMoreHoriz className="text-lg" />,
     },
-    {
-      title: "Product Category",
-      path: "/ecommerce/product-category",
-      icon: <MdOutlineCategory className="text-lg" />,
-    },
+   
     {
       title: "Products",
       path: "/ecommerce/products",

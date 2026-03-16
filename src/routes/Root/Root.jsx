@@ -5,6 +5,7 @@ import Footer from '../../components/Footer';
 import NavigationBar from "../../components/NavigationBar";
 
 
+
 const Root = () => {
 
     
@@ -17,6 +18,8 @@ const Root = () => {
          
         <header>
           <NavigationBar />
+          {/* <NavHome/> */}
+          
         </header>
       
         
