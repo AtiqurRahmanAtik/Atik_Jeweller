@@ -24,7 +24,7 @@ const ShopByCategory = () => {
         {/* Section Title with Decorative Line */}
         <div className="text-center mb-16 relative">
           <h2 className="text-3xl md:text-5xl font-serif text-[#1a1a1a] mb-4 tracking-wide">
-            Shop By Category
+            Popular Categories
           </h2>
           <div className="flex items-center justify-center gap-4">
             <div className="h-[1px] w-16 bg-[#d4af37]/40"></div>

@@ -8,6 +8,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/gold-categories`;
 export const useGoldCategories = () => {
 
   const { branch } = useAuth();
+  
   const [goldCategories, setGoldCategories] = useState([]);
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(false);

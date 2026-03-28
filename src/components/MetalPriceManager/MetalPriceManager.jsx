@@ -140,6 +140,8 @@ const MetalPriceManager = () => {
   const totalPages = pagination?.totalPages || 1;
   const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
+
+  
   return (
     <div className="min-h-screen bg-secondary p-4 md:p-6 lg:p-8">
 

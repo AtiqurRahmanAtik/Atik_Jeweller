@@ -17,13 +17,11 @@ export const useGoldProducts = () => {
   });
   const [loading, setLoading] = useState(false);
 
-
   // States for Dynamic Dropdowns
   const [categories, setCategories] = useState([]);
   const [stocks, setStocks] = useState([]);
   const [metals, setMetals] = useState([]);
   const [purities, setPurities] = useState([]);
-
 
   // Fetch Gold Products
   const fetchGoldProducts = useCallback(async (page = 1, limit = 10) => {
@@ -62,6 +60,20 @@ export const useGoldProducts = () => {
       console.error("Error fetching filters:", err);
     }
   }, [branch]);
+
+  // --- NEW: GET SINGLE PRODUCT BY ID ---
+  const getGoldProductById = async (id) => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`${API}/get-id/${id}`);
+      return res.data; 
+    } catch (err) {
+      console.error("Error fetching product by ID:", err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // CREATE
   const createGoldProduct = async (productData) => {
@@ -105,8 +117,6 @@ export const useGoldProducts = () => {
     }
   };
 
-  
-
   return {
     goldProducts,
     pagination,
@@ -117,6 +127,7 @@ export const useGoldProducts = () => {
     purities,
     fetchGoldProducts,
     fetchFilters,
+    getGoldProductById, // Added here
     createGoldProduct,
     updateGoldProduct,
     deleteGoldProduct

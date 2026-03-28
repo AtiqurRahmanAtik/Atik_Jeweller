@@ -1,4 +1,3 @@
-
 import { NavLink } from 'react-router-dom';
 import { 
   Search, 
@@ -11,14 +10,17 @@ import {
   Menu, 
   ChevronRight
 } from 'lucide-react';
-
+import { useEffect } from 'react';
+import { useGoldCategories } from '../Hook/useGoldCategories';
 import navLogo from "../../src/assets/Logo/logo.svg";
 
-
-
-
 const NavigationBar = () => {
-  
+
+  const { goldCategories, fetchAllGoldCategories, loading } = useGoldCategories();
+
+  useEffect(() => {
+    fetchAllGoldCategories(1, 100);
+  }, [fetchAllGoldCategories]);
 
 const navItems = [
   { id: 1, name: 'HOME', path: '/' },
@@ -30,7 +32,6 @@ const navItems = [
   { id: 7, name: 'TERMS & CONDITION', path: '/terms' },
 ];
  
-
   const pageLinks = navItems.map((item) => (
     <li key={item.id}>
       <NavLink 
@@ -48,32 +49,11 @@ const navItems = [
     </li>
   ));
 
-
-//   categories here
-  const categories = [
-    { name: 'Bangle' },
-    { name: 'Bracelet' },
-    { name: 'Chain' },
-    { name: 'Chur' },
-    { name: 'Churi' },
-    { name: 'Earrings' },
-    { name: 'Locket' },
-    { name: 'Necklace & Earring Set' },
-    { name: 'Necklaces', hasSubmenu: true },
-    { name: 'Rings', hasSubmenu: true },
-    { name: 'Shitahar' },
-  ];
-
-
-
-//   main component
   return (
     <header className="w-full bg-base-100 shadow-sm">
       
-     
       <nav className="navbar px-4 md:px-8 border-b border-gray-100 py-3">
         
-      
         <div className="navbar-start">
           {/* Mobile Hamburger Menu */}
           <div className="dropdown lg:hidden">
@@ -100,7 +80,6 @@ const navItems = [
         {/* Center: Logo */}
         <div className="navbar-center">
           <NavLink to="/" className="flex flex-col items-center">
-            
             <img 
               src={navLogo} 
               alt="Kunjo Jewellers" 
@@ -110,7 +89,6 @@ const navItems = [
                 e.target.nextSibling.style.display = 'block';
               }}
             />
-           
             <div className="hidden text-center">
               <h1 className="text-xl font-serif text-[#d4af37] font-bold uppercase tracking-widest">Kunjo</h1>
               <p className="text-[10px] uppercase tracking-widest font-semibold text-black">Jewellers</p>
@@ -144,45 +122,47 @@ const navItems = [
       <nav className="navbar px-4 md:px-8 min-h-[50px] hidden lg:flex">
         
         {/* Left: Browse Categories */}
-      <div className="navbar-start w-auto mr-8">
-      <div className="dropdown dropdown-hover">
-        {/* Trigger Button */}
-        <div 
-          tabIndex={0} 
-          role="button" 
-          className="flex items-center gap-2 font-bold text-[14px] text-gray-800 tracking-wide cursor-pointer h-full py-2"
-        >
-          BROWSE CATEGORIES <ChevronDown size={16} strokeWidth={2.5} />
-        </div>
-        
-        {/* Category Dropdown Items */}
-        <ul 
-          tabIndex="-1" 
-          className="dropdown-content bg-base-100 z-30 w-60 shadow-lg border border-gray-200 rounded-sm p-0 mt-2"
-        >
-          {categories.map((category, index) => (
-            <li 
-              key={index} 
-              className={`border-gray-200 ${index !== categories.length - 1 ? 'border-b' : ''}`}
+        <div className="navbar-start w-auto mr-8">
+          <div className="dropdown dropdown-hover">
+            {/* Trigger Button */}
+            <div 
+              tabIndex={0} 
+              role="button" 
+              className="flex items-center gap-2 font-bold text-[14px] text-gray-800 tracking-wide cursor-pointer h-full py-2"
             >
-              <li className="flex justify-between items-center px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-50 hover:text-black cursor-pointer transition-colors">
-                {category.name}
-                {category.hasSubmenu && (
-                  <ChevronRight size={14} className="text-gray-400" />
-                )}
-              </li>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+              BROWSE CATEGORIES <ChevronDown size={16} strokeWidth={2.5} />
+            </div>
+            
+            {/* Category Dropdown Items */}
+            <ul 
+              tabIndex="-1" 
+              className="dropdown-content bg-base-100 z-30 w-60 shadow-lg border border-gray-200 rounded-sm p-0 mt-2"
+            >
+              {loading ? (
+                <li className="px-4 py-3 text-[13px] text-gray-400">Loading...</li>
+              ) : (
+                goldCategories.map((category, index) => (
+                  <li 
+                    key={category._id} 
+                    className={`border-gray-200 ${index !== goldCategories.length - 1 ? 'border-b' : ''}`}
+                  >
+                    <li className="flex justify-between items-center px-4 py-3 text-[14px] text-gray-700 hover:bg-gray-50 hover:text-black cursor-pointer transition-colors">
+                      {category.categoryName}
+                      {category.hasSubmenu && (
+                        <ChevronRight size={14} className="text-gray-400" />
+                      )}
+                    </li>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        </div>
 
         {/* Center: Main Page  */}
         <div className="navbar-center flex-1 justify-center">
           <ul className="menu menu-horizontal px-1 gap-1">
-            
             {pageLinks}
-
           </ul>
         </div>
 

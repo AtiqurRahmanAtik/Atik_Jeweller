@@ -45,6 +45,7 @@ import GoldCategory from "../pages/Setting/GoldCategory/GoldCategory";
 import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import FeaturedProducts from "../components/Homepage/FeaturedProducts";
 import HomePage from "../pages/HomePage/HomePage";
+import ShopDetails from "../pages/ShopDetails/ShopDetails";
 
 
 
@@ -84,10 +85,16 @@ export const router = createBrowserRouter([
 ,
 
 
-      {
-        path: "/shop",
-        element: <Shop/>
-      },
+   {
+  path: "/shop",
+  element: <Shop/>,
+  children: [
+    {
+      path: ":id", // This correctly matches /shop/123
+      element: <ShopDetails/> 
+    }
+  ]
+},
       {
         path: "/aboutUs",
         element : <AboutUs/>
