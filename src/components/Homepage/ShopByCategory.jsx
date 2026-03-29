@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useGoldCategories } from '../../Hook/useGoldCategories'; // Ensure this path matches your folder structure
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom'; // 1. IMPORT LINK
 
 // Import basic Swiper styles only
 import 'swiper/css';
@@ -63,33 +64,21 @@ const ShopByCategory = () => {
               spaceBetween={20}
               breakpoints={{
                 // Mobile
-                320: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
+                320: { slidesPerView: 2, spaceBetween: 15 },
                 // Tablet
-                768: {
-                  slidesPerView: 3,
-                  spaceBetween: 25,
-                },
+                768: { slidesPerView: 3, spaceBetween: 25 },
                 // Desktop
-                1024: {
-                  slidesPerView: 5,
-                  spaceBetween: 30,
-                },
+                1024: { slidesPerView: 5, spaceBetween: 30 },
                 // Large Desktop
-                1280: {
-                  slidesPerView: 6,
-                  spaceBetween: 40,
-                },
+                1280: { slidesPerView: 6, spaceBetween: 40 },
               }}
               className="py-6"
             >
               {goldCategories?.map((category) => (
                 <SwiperSlide key={category._id}>
-                  <a
-                    // Dynamically generate a link based on the category name
-                    href={`/shop/${category.categoryName.toLowerCase().replace(/\s+/g, '-')}`}
+                  {/* 2. REPLACE <a> WITH <Link> AND FIX URL */}
+                  <Link
+                    to={`/shop/product-category/${category.categoryName}`}
                     className="flex flex-col items-center group cursor-pointer"
                   >
                     {/* Elegant Circular Image Container */}
@@ -114,7 +103,7 @@ const ShopByCategory = () => {
                       {/* Animated underline effect on hover purely via Tailwind */}
                       <div className="h-[2px] w-0 bg-[#d4af37] mx-auto mt-1 transition-all duration-300 group-hover:w-full"></div>
                     </div>
-                  </a>
+                  </Link>
                 </SwiperSlide>
               ))}
             </Swiper>
