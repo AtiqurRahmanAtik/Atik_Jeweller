@@ -85,15 +85,19 @@ export const router = createBrowserRouter([
 ,
 
 
-   {
+// Remove the "children: []" array completely and separate the routes like this:
+
+{
   path: "/shop",
-  element: <Shop/>,
-  children: [
-    {
-      path: ":id", // This correctly matches /shop/123
-      element: <ShopDetails/> 
-    }
-  ]
+  element: <Shop />
+},
+{
+  path: "/shop/product-category/:categoryName", 
+  element: <Shop />
+},
+{
+  path: "/shop/:id", // This perfectly matches the <Link> in your Shop.js!
+  element: <ShopDetails />
 },
       {
         path: "/aboutUs",
