@@ -157,6 +157,11 @@ const useMenuItems = () => {
       path: "/ecommerce/trendycollection",
       icon: <MdOutlinePhotoSizeSelectActual className="text-lg" />,
     },
+    {
+      title: "Autumn Collection",
+      path: "/ecommerce/autumncollection",
+      icon: <MdOutlinePhotoSizeSelectActual className="text-lg" />,
+    },
   ],
 },
 

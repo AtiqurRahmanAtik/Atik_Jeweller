@@ -48,6 +48,7 @@ import HomePage from "../pages/HomePage/HomePage";
 import ShopDetails from "../pages/ShopDetails/ShopDetails";
 import TrendyCollection from "../pages/Ecommerce/TrendyCollection/TrendyCollection";
 import TrendyCollectionDetails from "../pages/Trendycollectiondetails/Trendycollectiondetails";
+import AutumnCollection from "../pages/Ecommerce/AutumnCollection/AutumnCollection";
 
 
 
@@ -319,6 +320,14 @@ export const router = createBrowserRouter([
       element: (
         <PrivateRoot>
           <TrendyCollection />
+        </PrivateRoot>
+      ),
+    },
+     {
+      path: "autumncollection",
+      element: (
+        <PrivateRoot>
+          <AutumnCollection />
         </PrivateRoot>
       ),
     },
