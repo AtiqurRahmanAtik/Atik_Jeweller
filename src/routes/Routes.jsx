@@ -46,6 +46,8 @@ import ProductDetails from "../pages/ProductDetails/ProductDetails";
 import FeaturedProducts from "../components/Homepage/FeaturedProducts";
 import HomePage from "../pages/HomePage/HomePage";
 import ShopDetails from "../pages/ShopDetails/ShopDetails";
+import TrendyCollection from "../pages/Ecommerce/TrendyCollection/TrendyCollection";
+import TrendyCollectionDetails from "../pages/Trendycollectiondetails/Trendycollectiondetails";
 
 
 
@@ -79,7 +81,11 @@ export const router = createBrowserRouter([
       {
         path: "product/:id", // When the user clicks Quick View
         element: <ProductDetails /> // Show ONLY the product details
-      }
+      },
+      {
+  path: "trendy-collection/:id",
+  element: <TrendyCollectionDetails />
+}
     ]
   }
 ,
@@ -305,6 +311,14 @@ export const router = createBrowserRouter([
       element: (
         <PrivateRoot>
           <Products />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "trendycollection",
+      element: (
+        <PrivateRoot>
+          <TrendyCollection />
         </PrivateRoot>
       ),
     },
