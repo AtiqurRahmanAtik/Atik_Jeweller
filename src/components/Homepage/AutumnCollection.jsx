@@ -1,58 +1,58 @@
+// File: src/components/AutumnCollection/AutumnCollection.jsx
+// (Adjust the import path to your hook depending on your folder structure)
+
 import React from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper modules
 import { Pagination, Autoplay } from 'swiper/modules';
 import { Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+// Import your custom hook
+import useAutumnCollections from '../../Hook/useAutumnCollections'; 
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
 const AutumnCollection = () => {
+  const navigate = useNavigate();
   
-  const products = [
-    {
-      id: 1,
-      category: 'SHITAHAR',
-      name: 'Shitahar 008',
-      price: '515,467.35৳',
-    
-      image: 'https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?auto=format&fit=crop&q=80&w=400',
-    },
-    {
-      id: 2,
-      category: 'SHITAHAR',
-      name: 'Shitahar 007',
-      price: '554,220.56৳',
-     
-      image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400',
-    },
-    {
-      id: 3,
-      category: 'SHITAHAR',
-      name: 'Shitahar 006',
-      price: '553,972.14৳',
-     
-      image: 'https://images.unsplash.com/photo-1629224314594-2b131d278d1a?auto=format&fit=crop&q=80&w=400',
-    },
-    {
-      id: 4,
-      category: 'SHITAHAR',
-      name: 'Shitahar 005',
-      price: '650,591.42৳',
-      
-      image: 'https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&q=80&w=400',
-    },
-    {
-      id: 5, 
-      category: 'SHITAHAR',
-      name: 'Shitahar 004',
-      price: '480,000.00৳',
-    
-      image: 'https://images.unsplash.com/photo-1589674781759-c21c37956a44?auto=format&fit=crop&q=80&w=400',
-    },
-  ];
+  // Fetch data using the hook (fetching page 1, up to 15 items for the slider)
+  const { autumnCollections, loading, error } = useAutumnCollections(1, 15);
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20 min-h-[300px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-800"></div>
+          <p className="text-gray-600 font-medium animate-pulse">Loading Autumn Collection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="bg-red-50 text-red-600 px-6 py-4 rounded-lg font-medium">
+          Failed to load collection: {error}
+        </div>
+      </div>
+    );
+  }
+
+  // Empty State
+  if (!autumnCollections || autumnCollections.length === 0) {
+    return (
+      <div className="text-center py-20 text-gray-500 font-medium">
+        No autumn collections available at the moment.
+      </div>
+    );
+  }
 
   return (
     <section className="py-16 bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,7 +85,6 @@ const AutumnCollection = () => {
             clickable: true,
             dynamicBullets: true,
           }}
-          
           breakpoints={{
             480: { slidesPerView: 2 },
             768: { slidesPerView: 3 },
@@ -93,42 +92,46 @@ const AutumnCollection = () => {
           }}
           className="mySwiper"
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id}>
+          {autumnCollections.map((product) => (
+            <SwiperSlide key={product._id}>
               <div className="flex flex-col group cursor-pointer">
                 
-                
+                {/* Image Container */}
                 <div className="relative w-full aspect-square overflow-hidden rounded-sm bg-gray-100">
                   <img
-                    src={product.image}
-                    alt={product.name}
+                    src={product.imageUrl}
+                    alt={product.productTitle}
                     className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=No+Image' }}
                   />
                   
                   {/* Dark Overlay & Quick View Button */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-[#d4af37] hover:text-white transition-colors duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0">
+                    <button 
+                      onClick={() => navigate(`/product/${product._id}`)}
+                      className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-[#d4af37] hover:text-white transition-colors duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0"
+                    >
                       Quick View
                     </button>
                   </div>
                 </div>
 
-               
+                {/* Product Info */}
                 <div className="mt-4 flex justify-between items-start px-1">
-                  <div>
-                    <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1.5">
-                      {product.category}
+                  <div className="flex-1 pr-2">
+                    <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1.5 line-clamp-1">
+                      {product.category || 'Collection'}
                     </p>
-                    <h3 className="text-sm md:text-base text-gray-800 font-medium mb-2 hover:text-[#d4af37] transition-colors">
-                      {product.name}
+                    <h3 className="text-sm md:text-base text-gray-800 font-medium mb-2 hover:text-[#d4af37] transition-colors line-clamp-1" title={product.productTitle}>
+                      {product.productTitle}
                     </h3>
                     <p className="text-sm md:text-base font-bold text-gray-900">
-                      {product.price}
+                      {Number(product.totalPrice || product.originalPrice || 0).toLocaleString()}৳
                     </p>
                   </div>
                   
                   {/* Heart Icon */}
-                  <button className="text-gray-400 hover:text-red-500 transition-colors pt-1">
+                  <button className="text-gray-400 hover:text-red-500 transition-colors pt-1 flex-shrink-0">
                     <Heart size={18} strokeWidth={1.5} />
                   </button>
                 </div>
