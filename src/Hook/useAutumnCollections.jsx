@@ -50,6 +50,7 @@ const useAutumnCollections = (page = 1, limit = 10) => {
         fetchAutumnCollections();
     }, [fetchAutumnCollections]);
 
+    
     // GET BY ID
     const getCollectionById = async (id) => {
         try {

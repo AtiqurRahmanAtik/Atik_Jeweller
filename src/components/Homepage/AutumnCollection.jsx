@@ -22,6 +22,7 @@ const AutumnCollection = () => {
   // Fetch data using the hook (fetching page 1, up to 15 items for the slider)
   const { autumnCollections, loading, error } = useAutumnCollections(1, 15);
 
+  
   // Loading State
   if (loading) {
     return (
@@ -53,6 +54,8 @@ const AutumnCollection = () => {
       </div>
     );
   }
+
+  
 
   return (
     <section className="py-16 bg-white w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -107,12 +110,13 @@ const AutumnCollection = () => {
                   
                   {/* Dark Overlay & Quick View Button */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button 
-                      onClick={() => navigate(`/product/${product._id}`)}
-                      className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-[#d4af37] hover:text-white transition-colors duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0"
-                    >
-                      Quick View
-                    </button>
+                   <button 
+                    // FIXED: Path matches the Route definition exactly
+                    onClick={() => navigate(`/AutumnProduct/${product._id}`)}
+                    className="bg-white text-black px-6 py-2.5 text-sm font-bold uppercase hover:bg-black hover:text-white transition-all"
+                  >
+                    Quick View
+                  </button>
                   </div>
                 </div>
 

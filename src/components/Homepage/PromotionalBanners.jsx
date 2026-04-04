@@ -44,7 +44,7 @@ const PromotionalBanners = () => {
         {threeDotImages.slice(0, 3).map((banner) => (
           <a 
             key={banner._id} 
-            href={`/shop/${banner.imageName.toLowerCase().replace(/\s+/g, '-')}`} // Dynamically creates a link based on the name, or use "#"
+            href={`/shop`} // Dynamically creates a link based on the name, or use "#"
             className="block relative overflow-hidden rounded-sm group cursor-pointer shadow-sm hover:shadow-md transition-shadow"
           >
             

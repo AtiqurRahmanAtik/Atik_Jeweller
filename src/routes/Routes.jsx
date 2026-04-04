@@ -49,6 +49,7 @@ import ShopDetails from "../pages/ShopDetails/ShopDetails";
 import TrendyCollection from "../pages/Ecommerce/TrendyCollection/TrendyCollection";
 import TrendyCollectionDetails from "../pages/Trendycollectiondetails/Trendycollectiondetails";
 import AutumnCollection from "../pages/Ecommerce/AutumnCollection/AutumnCollection";
+import AutumnProductDetails from "../pages/AutumnProductDetails/AutumnProductDetails";
 
 
 
@@ -86,7 +87,14 @@ export const router = createBrowserRouter([
       {
   path: "trendy-collection/:id",
   element: <TrendyCollectionDetails />
-}
+},
+  {
+      // FIXED: Path updated to "AutumnProduct/:id" to match the navigate call
+      path: "AutumnProduct/:id", 
+      element: <AutumnProductDetails /> 
+    },
+
+
     ]
   }
 ,
