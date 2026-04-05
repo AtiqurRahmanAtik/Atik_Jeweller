@@ -1,37 +1,49 @@
 import React from 'react';
+// IMPORTANT: Adjust this path to point to where your useTwoDotBanners hook is saved!
+import useTwoDotBanners from '../../Hook/useTwoDotBanners'; 
 
 const DualBanners = () => {
-  
-  const banners = [
-    {
-      id: 1,
-      
-      image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800', 
-      alt: 'All you need is love. But a little jewellery never hurt anybody.',
-      link: '/shop/bangles'
-    },
-    {
-      id: 2,
-      
-      image: 'https://images.unsplash.com/photo-1599643478524-fb66f70a00eb?auto=format&fit=crop&q=80&w=800', 
-      alt: 'We live every second of our day why not make every moment special?',
-      link: '/shop/special-collection'
-    }
-  ];
+  // Destructure the data, loading state, and error state from your custom API hook
+  const { banners, loading, error } = useTwoDotBanners();
 
+  // Show a loading state while fetching data from the backend
+  if (loading) {
+    return (
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      </section>
+    );
+  }
 
+  // Show an error message if the API fails
+  if (error) {
+    return (
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="text-center text-red-500 font-medium">
+          Failed to load banners: {error}
+        </div>
+      </section>
+    );
+  }
 
-//   main
+  // If the API call succeeds but there are no banners in the database, render nothing (or a fallback)
+  if (!banners || banners.length === 0) {
+    return null;
+  }
+
+  // Main UI
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
+        {/* Map through the dynamic array of banners coming from your backend */}
         {banners.map((banner) => (
           <a 
-            key={banner.id} 
-            href={banner.link}
-            
+            key={banner._id} // Using the MongoDB _id from your backend
+            href={banner.link || '#'} // Fallback to '#' if you don't have a link field in your DB
             className="block relative overflow-hidden group cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300"
           >
             {/* Zoom Effect:
@@ -40,12 +52,14 @@ const DualBanners = () => {
               - Removing the hover state smoothly zooms it OUT back to normal scale.
             */}
             <img 
-              src={banner.image} 
-              alt={banner.alt} 
-              
+              src={banner.imageUrl} // Mapped to the imageUrl from your API
+              alt={banner.imageName} // Mapped to the imageName from your API
               className="w-full h-full object-cover aspect-[16/9] md:aspect-[8/5] transform transition-transform duration-700 ease-in-out group-hover:scale-110"
+              onError={(e) => { 
+                // Fallback just in case the image URL from the database is broken
+                e.target.src = 'https://via.placeholder.com/800x500?text=Image+Not+Found'; 
+              }}
             />
-            
             
             <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
           </a>

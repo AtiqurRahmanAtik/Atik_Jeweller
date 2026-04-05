@@ -9,7 +9,6 @@ export const useGoldProducts = () => {
   const { branch } = useAuth();
 
   const [goldProducts, setGoldProducts] = useState([]);
-
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -17,20 +16,26 @@ export const useGoldProducts = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  // States for Dynamic Dropdowns
+  // States for Dynamic Dropdowns (Only Categories kept)
   const [categories, setCategories] = useState([]);
-  const [stocks, setStocks] = useState([]);
-  const [metals, setMetals] = useState([]);
-  const [purities, setPurities] = useState([]);
 
-  // Fetch Gold Products
-  const fetchGoldProducts = useCallback(async (page = 1, limit = 10) => {
+  // Fetch Gold Products (Updated to handle category filtering)
+  const fetchGoldProducts = useCallback(async (page = 1, limit = 10, categoryId = "") => {
     if (!branch) return;
+
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/${branch}/get-all`, {
-        params: { page, limit }
-      });
+      
+      // Build query parameters dynamically
+      const params = { page, limit };
+      
+      // If a categoryId is provided, add it to the API request
+      if (categoryId) {
+        params.category = categoryId; // Note: Ensure 'category' matches the query parameter your backend expects (e.g., ?category=123)
+      }
+
+      const res = await axios.get(`${API}/${branch}/get-all`, { params });
+      
       setGoldProducts(res.data?.data || []);
       setPagination(res.data?.pagination || { currentPage: page, totalPages: 1, totalItems: res.data?.data?.length || 0 });
     } catch (err) {
@@ -41,27 +46,19 @@ export const useGoldProducts = () => {
     }
   }, [branch]);
 
-  // Fetch All Filters (Categories, Stocks, Metals, Purities) concurrently
+  // Fetch ONLY Categories
   const fetchFilters = useCallback(async () => {
     if (!branch) return;
-    try {
-      const [catRes, stockRes, metalRes, purityRes] = await Promise.all([
-        axios.get(`${BASE_URL}/gold-categories/${branch}/get-all`),
-        axios.get(`${BASE_URL}/stock/${branch}/get-all`),
-        axios.get(`${BASE_URL}/metaltype/${branch}/get-all`),
-        axios.get(`${BASE_URL}/purities/${branch}/get-all`)
-      ]);
 
+    try {
+      const catRes = await axios.get(`${BASE_URL}/gold-categories/${branch}/get-all`);
       setCategories(catRes.data?.data || []);
-      setStocks(stockRes.data?.data || []);
-      setMetals(metalRes.data?.data || []);
-      setPurities(purityRes.data?.data || []);
     } catch (err) {
       console.error("Error fetching filters:", err);
     }
   }, [branch]);
 
-  // --- NEW: GET SINGLE PRODUCT BY ID ---
+  // --- GET SINGLE PRODUCT BY ID ---
   const getGoldProductById = async (id) => {
     try {
       setLoading(true);
@@ -118,16 +115,14 @@ export const useGoldProducts = () => {
   };
 
   return {
+    branch,
     goldProducts,
     pagination,
     loading,
     categories,
-    stocks,
-    metals,
-    purities,
     fetchGoldProducts,
     fetchFilters,
-    getGoldProductById, // Added here
+    getGoldProductById,
     createGoldProduct,
     updateGoldProduct,
     deleteGoldProduct

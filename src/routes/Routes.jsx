@@ -33,7 +33,7 @@ import ReturnList from "../pages/Sales/ReturnList/ReturnList";
 import SalesList from "../pages/Sales/SalesList/SalesList";
 import PosSale from "../pages/Sales/PosSale/PosSale";
 import Sale from "../pages/Sales/Sale/Sale";
-import { MdOutlinePeople, MdOutlinePerson, MdOutlineReceiptLong } from "react-icons/md";
+
 import DueList from "../pages/Customer/DueList/DueList";
 import Customer from "../pages/Customer/Customer/Customer";
 import ArtisanPayment from "../pages/Order/ArtisanPayment/ArtisanPayment";
@@ -43,13 +43,17 @@ import MetalType from "../pages/Setting/MetalType/MetalType";
 import Purity from "../pages/Setting/Purity/Purity";
 import GoldCategory from "../pages/Setting/GoldCategory/GoldCategory";
 import ProductDetails from "../pages/ProductDetails/ProductDetails";
-import FeaturedProducts from "../components/Homepage/FeaturedProducts";
+
 import HomePage from "../pages/HomePage/HomePage";
 import ShopDetails from "../pages/ShopDetails/ShopDetails";
 import TrendyCollection from "../pages/Ecommerce/TrendyCollection/TrendyCollection";
 import TrendyCollectionDetails from "../pages/Trendycollectiondetails/Trendycollectiondetails";
 import AutumnCollection from "../pages/Ecommerce/AutumnCollection/AutumnCollection";
 import AutumnProductDetails from "../pages/AutumnProductDetails/AutumnProductDetails";
+import TwoDotImage from "../pages/Ecommerce/TwoDotImage/TwoDotImage";
+
+
+
 
 
 
@@ -320,6 +324,15 @@ export const router = createBrowserRouter([
       element: (
         <PrivateRoot>
           <Products />
+        </PrivateRoot>
+      ),
+    },
+
+    {
+      path: "two-dot-image",
+      element: (
+        <PrivateRoot>
+          <TwoDotImage />
         </PrivateRoot>
       ),
     },
