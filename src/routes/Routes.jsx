@@ -51,6 +51,10 @@ import TrendyCollectionDetails from "../pages/Trendycollectiondetails/Trendycoll
 import AutumnCollection from "../pages/Ecommerce/AutumnCollection/AutumnCollection";
 import AutumnProductDetails from "../pages/AutumnProductDetails/AutumnProductDetails";
 import TwoDotImage from "../pages/Ecommerce/TwoDotImage/TwoDotImage";
+import Purchase from "../pages/Purchase/Purchase/Purchase";
+import PurchaseList from "../pages/Purchase/PurchaseList/PurchaseList";
+
+
 
 
 
@@ -241,6 +245,33 @@ export const router = createBrowserRouter([
     },
   ],
 },
+
+
+
+{
+  path: "purchase",
+  children: [
+    {
+      path: "purchase",
+      element: (
+        <PrivateRoot>
+          <Purchase />
+        </PrivateRoot>
+      ),
+    },
+    {
+      path: "purchaseList",
+      element: (
+        <PrivateRoot>
+          < PurchaseList/>
+        </PrivateRoot>
+      ),
+    },
+  ],
+},
+
+
+
 
 {
   path: "customer",

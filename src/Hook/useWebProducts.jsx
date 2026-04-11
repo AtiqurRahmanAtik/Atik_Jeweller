@@ -15,6 +15,8 @@ export const useWebProducts = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // Used for error handling on the frontend
 
+  console.log(" webProducts category : ", webProducts);
+
   // --- 1. GET ALL (For Frontend Featured Products Slider) ---
   const fetchAllProducts = useCallback(async (page = 1, limit = 50) => {
     try {
@@ -119,6 +121,31 @@ export const useWebProducts = () => {
     }
   };
 
+  // --- 7. SEARCH PRODUCTS (New Function) ---
+  const searchProducts = useCallback(async (searchTerm, page = 1, limit = 10) => {
+    if (!searchTerm) {
+      // Optional: If search is cleared, fetch default branch products again
+      fetchWebProducts(1, limit);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await axios.get(`${API}/search?q=${searchTerm}&page=${page}&limit=${limit}`);
+      
+      if (res.data.success) {
+        setWebProducts(res.data.data);
+        setPagination(res.data.pagination);
+      }
+    } catch (err) {
+      console.error("Search Error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchWebProducts]); // Dependency added in case fetchWebProducts needs to run
+
   return {
     // States
     webProducts,
@@ -134,6 +161,7 @@ export const useWebProducts = () => {
     fetchWebProductById,
     createWebProduct,
     updateWebProduct,
-    deleteWebProduct
+    deleteWebProduct,
+    searchProducts // <-- Make sure to export it here
   };
 };

@@ -3,41 +3,106 @@ import {
     Calendar, ShoppingCart, Plus, PackageOpen, Loader2,
     Trash2, X, Scale, Coins, Receipt, Tag, CheckCircle, AlertCircle, Printer
 } from 'lucide-react';
-import { useGoldProducts } from '../../../Hook/useGoldProducts';
+import { useWebProducts } from '../../../Hook/useWebProducts'; 
 import { useOrders } from '../../../Hook/useOrders';
+import useAuth from '../../../Hook/useAuth'; 
+
+// Custom SVG exactly matching your uploaded 9-dot grid image
+const NineDotGridIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="4" fill="currentColor" />
+        <circle cx="6" cy="6" r="2.5" fill="white" />
+        <circle cx="12" cy="6" r="2.5" fill="white" />
+        <circle cx="18" cy="6" r="2.5" fill="white" />
+        <circle cx="6" cy="12" r="2.5" fill="white" />
+        <circle cx="12" cy="12" r="2.5" fill="white" />
+        <circle cx="18" cy="12" r="2.5" fill="white" />
+        <circle cx="6" cy="18" r="2.5" fill="white" />
+        <circle cx="12" cy="18" r="2.5" fill="white" />
+        <circle cx="18" cy="18" r="2.5" fill="white" />
+    </svg>
+);
+
+// Helper function to convert Amount to Words
+const convertNumberToWords = (amount) => {
+    if (!amount) return "Zero Taka Only";
+    
+    const words = [
+        "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+    ];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+    function convert(num) {
+        if (num < 20) return words[num];
+        if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? " " + words[num % 10] : "");
+        if (num < 1000) return words[Math.floor(num / 100)] + " Hundred" + (num % 100 !== 0 ? " and " + convert(num % 100) : "");
+        if (num < 100000) return convert(Math.floor(num / 1000)) + " Thousand" + (num % 1000 !== 0 ? " " + convert(num % 1000) : "");
+        if (num < 10000000) return convert(Math.floor(num / 100000)) + " Lakh" + (num % 100000 !== 0 ? " " + convert(num % 100000) : "");
+        return convert(Math.floor(num / 10000000)) + " Crore" + (num % 10000000 !== 0 ? " " + convert(num % 10000000) : "");
+    }
+
+    const numStr = String(amount);
+    if (numStr.includes('.')) {
+        const parts = numStr.split('.');
+        const taka = convert(Number(parts[0]));
+        const poisha = convert(Number(parts[1].substring(0, 2))); // Max 2 decimal
+        return poisha !== "Zero" ? `${taka} Taka and ${poisha} Poisha Only` : `${taka} Taka Only`;
+    }
+    return convert(Number(amount)) + " Taka Only";
+};
 
 const AddOrder = () => {
+    const { branch } = useAuth();
     const {
-        branch,
-        fetchFilters,
-        fetchGoldProducts,
-        categories,
-        goldProducts,
+        webProducts,
         loading,
         pagination,
-    } = useGoldProducts();
+        fetchWebProducts,
+        searchProducts
+    } = useWebProducts();
 
     const { createOrder, loading: orderLoading } = useOrders();
 
+    const [page, setPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [cartItems, setCartItems] = useState([]);
+    
+    // --- Order Form States ---
+    const [customerName, setCustomerName] = useState(''); 
     const [discountPct, setDiscountPct] = useState('');
     const [discountAmt, setDiscountAmt] = useState('');
     const [paidAmt, setPaidAmt] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
     const [note, setNote] = useState('');
-
+    const [invoiceId, setInvoiceId] = useState(() => Math.floor(100000 + Math.random() * 900000));
     const [toast, setToast] = useState(null);
     const [successModal, setSuccessModal] = useState(null);
+    
+    // --- Grid Layout (2, 3, or 4 columns) ---
+    const [gridCols, setGridCols] = useState(2); 
 
     const fetchedBranch = useRef(null);
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if (searchTerm) {
+                searchProducts(searchTerm, page, 10);
+            } else {
+                fetchWebProducts(page, 10);
+            }
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [page, searchTerm, searchProducts, fetchWebProducts]);
+
     useEffect(() => {
         if (branch && fetchedBranch.current !== branch) {
             fetchedBranch.current = branch;
-            fetchFilters();
-            fetchGoldProducts(1, 100);
+            fetchWebProducts(1, 100);
         }
-    }, [branch]);
+    }, [branch, fetchWebProducts]);
 
     useEffect(() => {
         if (!toast) return;
@@ -45,19 +110,14 @@ const AddOrder = () => {
         return () => clearTimeout(t);
     }, [toast]);
 
-    const getImage = (p) => p.productImage || p.imageUrl || p.image || null;
-    const getName = (p) => p.productName || p.name || 'Unnamed';
-    const getSalePrice = (p) => parseFloat(p.salesPrice || p.salePrice || p.price || 0);
-    const getVat = (p) => parseFloat(p.vatPercentage || p.vat || 0);
+    const getName = (p) => p.title || p.productName || p.name || 'Unnamed';
+    const getSalePrice = (p) => parseFloat(p.totalPrice || p.salesPrice || p.salePrice || p.price || 0);
+
 
     const getProductCategoryName = (p) => {
         if (!p.category) return '';
         if (typeof p.category === 'string') return p.category;
         return p.category.name || p.category.categoryName || '';
-    };
-    const getCatName = (cat) => {
-        if (typeof cat === 'string') return cat;
-        return cat.name || cat.categoryName || cat.title || String(cat);
     };
 
     const fmt = (n) => Number(n || 0).toLocaleString('en-BD', {
@@ -66,16 +126,17 @@ const AddOrder = () => {
     });
 
     const categoryNames = useMemo(() => {
-        const fromHook = categories.map(getCatName).filter(Boolean);
-        const fromProducts = goldProducts.map(getProductCategoryName).filter(Boolean);
-        return [...new Set([...fromHook, ...fromProducts])].sort();
-    }, [categories, goldProducts]);
+        const fromProducts = webProducts.map(getProductCategoryName).filter(Boolean);
+        return [...new Set(fromProducts)].sort();
+    }, [webProducts]);
 
     const filteredProducts = useMemo(() => {
-        if (!goldProducts?.length) return [];
-        if (selectedCategory === 'All') return goldProducts;
-        return goldProducts.filter(p => getProductCategoryName(p) === selectedCategory);
-    }, [goldProducts, selectedCategory]);
+        if (!webProducts?.length) return [];
+        if (selectedCategory === 'All') return webProducts;
+        
+        const exactMatches = webProducts.filter(p => getProductCategoryName(p) === selectedCategory);
+        return exactMatches.length > 0 ? exactMatches : webProducts;
+    }, [webProducts, selectedCategory]);
 
     const subtotal = cartItems.reduce((s, i) => s + getSalePrice(i) * i.qty, 0);
 
@@ -87,7 +148,7 @@ const AddOrder = () => {
 
     const vatTotal = cartItems.reduce((s, i) => {
         const lineTotal = getSalePrice(i) * i.qty;
-        const vatAmt = (lineTotal * getVat(i)) / 100;
+        const vatAmt = (lineTotal ) / 100;
         return s + vatAmt;
     }, 0);
 
@@ -110,8 +171,14 @@ const AddOrder = () => {
         setCartItems(prev => prev.filter(i => i._id !== id));
 
     const clearOrder = () => {
-        setCartItems([]); setDiscountPct(''); setDiscountAmt('');
-        setPaidAmt(''); setDeliveryDate(''); setNote('');
+        setCartItems([]); 
+        setCustomerName(''); 
+        setDiscountPct(''); 
+        setDiscountAmt('');
+        setPaidAmt(''); 
+        setDeliveryDate(''); 
+        setNote('');
+        setInvoiceId(Math.floor(100000 + Math.random() * 900000)); 
     };
 
     const handleConfirmOrder = async () => {
@@ -119,16 +186,18 @@ const AddOrder = () => {
 
         const payload = {
             orderId: Date.now(),
+            Invoice: invoiceId, 
+            customerName: customerName || 'Walk-in Customer',
             Products: cartItems.map(item => ({
                 product: item._id,
                 productName: getName(item),
                 category: getProductCategoryName(item),
                 salesPrice: getSalePrice(item),
-                vatPercentage: getVat(item),
+              
                 quantity: item.qty,
                 Total: getSalePrice(item) * item.qty,
-                VAT: (getSalePrice(item) * item.qty * getVat(item)) / 100,
-                TotalWithVat: getSalePrice(item) * item.qty + (getSalePrice(item) * item.qty * getVat(item)) / 100,
+                VAT: (getSalePrice(item) * item.qty ) / 100,
+                TotalWithVat: getSalePrice(item) * item.qty + (getSalePrice(item) * item.qty ) / 100,
             })),
             price: subtotal,
             discount: discountValue || 0,
@@ -159,9 +228,14 @@ const AddOrder = () => {
 
     const isSubmitting = orderLoading;
 
+    const GridColumnIcons = {
+        2: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/></svg>,
+        3: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="5" height="18" rx="1"/><rect x="9.5" y="3" width="5" height="18" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg>,
+        4: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="1.5" y="3" width="3.5" height="18" rx="0.5"/><rect x="7.25" y="3" width="3.5" height="18" rx="0.5"/><rect x="13" y="3" width="3.5" height="18" rx="0.5"/><rect x="18.75" y="3" width="3.5" height="18" rx="0.5"/></svg>
+    };
+
     return (
         <>
-            {/* ── MAIN LAYOUT (Hidden entirely during print to prevent overlap) ── */}
             <div className="min-h-screen bg-[#fdf8ed] p-4 md:p-6 font-sans text-slate-800 print:hidden relative">
 
                 {/* Toast */}
@@ -177,21 +251,58 @@ const AddOrder = () => {
                 <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* ══ LEFT (Products) ══ */}
                     <div className="lg:col-span-2">
-                        {/* Category bar */}
+                        {/* Search & Category bar */}
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-orange-100 mb-4">
-                            <div className="flex items-center justify-between mb-3">
-                                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Filter by Category</h2>
-                                <span className="text-xs text-gray-400">{filteredProducts.length} / {goldProducts.length} products</span>
+                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                                <div className="flex items-center gap-2 text-gray-800">
+                                    <NineDotGridIcon />
+                                    <h2 className="text-sm font-bold uppercase tracking-wider">Search & Filter</h2>
+                                </div>
+                                <div className="flex flex-col sm:flex-row items-center gap-4">
+                                    <div className="flex items-center gap-1 bg-orange-50/50 p-1 rounded-lg border border-orange-100">
+                                        {[2, 3, 4].map(num => (
+                                            <button
+                                                key={num}
+                                                onClick={() => setGridCols(num)}
+                                                className={`w-8 h-7 rounded flex items-center justify-center transition-all 
+                                                    ${gridCols === num 
+                                                        ? 'bg-white shadow-sm text-black border border-orange-200' 
+                                                        : 'text-black hover:text-orange-500 hover:bg-orange-100/50'
+                                                    }`}
+                                                title={`${num} Columns Layout`}
+                                            >
+                                                {GridColumnIcons[num]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <span className="text-xs text-gray-400">{filteredProducts.length} products </span>
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <input
+                                    type="text"
+                                    placeholder="Search products by title or tag..."
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        setPage(1); 
+                                    }}
+                                    className="w-full px-4 py-2.5 text-sm border border-orange-200 rounded-lg focus:outline-none focus:border-[#c27803] focus:ring-1 focus:ring-[#c27803] transition-all bg-orange-50/30"
+                                />
                             </div>
 
                             {loading && categoryNames.length === 0 ? (
                                 <div className="flex items-center gap-2 text-orange-400 text-sm">
-                                    <Loader2 size={14} className="animate-spin" /> Loading…
+                                    <Loader2 size={14} className="animate-spin" /> Loading Categories…
                                 </div>
                             ) : (
                                 <div className="flex flex-wrap gap-2">
                                     <button
-                                        onClick={() => setSelectedCategory('All')}
+                                        onClick={() => {
+                                            setSelectedCategory('All');
+                                            setPage(1);
+                                        }}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${selectedCategory === 'All' ? 'bg-[#c27803] text-white shadow-md' : 'bg-orange-50 text-orange-800 border border-orange-200 hover:bg-orange-100'
                                             }`}
                                     >
@@ -200,7 +311,10 @@ const AddOrder = () => {
                                     {categoryNames.map((name) => (
                                         <button
                                             key={name}
-                                            onClick={() => setSelectedCategory(name)}
+                                            onClick={() => {
+                                                setSelectedCategory(name);
+                                                setPage(1); 
+                                            }}
                                             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${selectedCategory === name ? 'bg-[#c27803] text-white shadow-md' : 'bg-orange-50 text-orange-800 border border-orange-200 hover:bg-orange-100'
                                                 }`}
                                         >
@@ -224,35 +338,102 @@ const AddOrder = () => {
                                     <p className="font-medium text-gray-500">No products found</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className={`grid gap-5 transition-all duration-300
+                                    ${gridCols === 2 ? 'grid-cols-1 sm:grid-cols-2' : ''}
+                                    ${gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : ''}
+                                    ${gridCols === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''}
+                                `}>
                                     {filteredProducts.map((product) => {
-                                        const imgSrc = getImage(product);
+                                        const finalImgSrc = product.imageUrl || product.productImage || null;
                                         const name = getName(product);
-                                        const inCart = cartItems.find(i => i._id === product._id);
+                                        const inCart = cartItems.find((i) => i._id === product._id);
 
                                         return (
-                                            <div key={product._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group">
+                                            <div
+                                                key={product._id}
+                                                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group"
+                                            >
                                                 <div className="relative aspect-[4/3] bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
-                                                    {imgSrc ? (
-                                                        <img src={imgSrc} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                                                    {finalImgSrc ? (
+                                                        <img
+                                                            src={finalImgSrc}
+                                                            alt={name}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            onError={(e) => {
+                                                                e.target.style.display = 'none';
+                                                                e.target.nextSibling.style.display = 'flex';
+                                                            }}
+                                                        />
                                                     ) : null}
-                                                    <div style={{ display: imgSrc ? 'none' : 'flex' }} className="absolute inset-0 flex items-center justify-center text-orange-200 text-5xl">💍</div>
+                                                    <div
+                                                        style={{ display: finalImgSrc ? 'none' : 'flex' }}
+                                                        className="absolute inset-0 flex items-center justify-center text-orange-200 text-5xl"
+                                                    >
+                                                        💍
+                                                    </div>
                                                     {inCart && (
-                                                        <span className="absolute bottom-3 right-3 bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md">
+                                                        <span className="absolute bottom-3 right-3 bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md z-10">
                                                             {inCart.qty} in Cart
                                                         </span>
                                                     )}
+                                                    
+                                                    <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-100 uppercase tracking-wide z-10">
+                                                        {product.category || 'Ring'}
+                                                    </span>
                                                 </div>
 
                                                 <div className="p-4 flex flex-col flex-1">
-                                                    <h2 className="font-bold text-lg text-gray-900 line-clamp-1 mb-2" title={name}>{name}</h2>
-                                                    <p className="text-xs text-gray-500 mb-4 line-clamp-2 min-h-[32px]">{product.productDescription || product.description || 'No description available.'}</p>
+                                                    <h2 className="font-bold text-lg text-gray-900 line-clamp-1 mb-1" title={name}>
+                                                        {name}
+                                                    </h2>
+
+                                                    <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 bg-orange-50/50 p-3 rounded-lg border border-orange-100 mt-auto">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Metal/Purity</span>
+                                                            <span className="text-xs font-bold text-gray-700">
+                                                                {product.metalType || 'Gold'} <span className="text-gray-400 mx-0.5">•</span> {product.purity || product.tag || 'N/A'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Sales Price</span>
+                                                            <span className="text-sm font-extrabold text-[#c27803]">
+                                                                ৳{(product.totalPrice || product.salesPrice)?.toLocaleString() || 0}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Making Charge</span>
+                                                            <span className="text-xs font-bold text-gray-700">
+                                                                ৳{(product.wages || product.makingCharge)?.toLocaleString() || 0}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Purchase Price</span>
+                                                            <span className="text-xs font-bold text-gray-600">
+                                                                ৳{(product.originalPrice || product.purchasePrice)?.toLocaleString() || 0}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Rates/Weight</span>
+                                                            <span className="text-xs font-bold text-gray-600 truncate">
+                                                                {product.salesRatePerVori || product.weight || 0} <span className="text-gray-400 mx-0.5">/</span> {product.purchaseRatePerVori || 'Gram'}
+                                                            </span>
+                                                        </div>
+                                                        
+                                                    </div>
                                                 </div>
 
                                                 <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                                                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500"><Tag size={12} /><span className="font-semibold text-gray-700 uppercase tracking-wide truncate max-w-[100px]">{product.stockTypes || 'Standard'}</span></div>
-                                                    <button onClick={() => handleAddToCart(product)} className="bg-[#c27803] hover:bg-[#a66502] text-white text-xs font-bold px-4 py-2 rounded-md transition-colors shadow-sm flex items-center gap-1.5">
-                                                        <Plus size={14} strokeWidth={3} /> {inCart ? 'Add Another' : 'Add to Order'}
+                                                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                                                        <Tag size={12} />
+                                                        <span className="font-semibold text-gray-700 uppercase tracking-wide truncate max-w-[90px]" title={product.stockTypes || product.featuredProducts}>
+                                                            {product.stockTypes || product.featuredProducts || 'Standard'}
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleAddToCart(product)}
+                                                        className="bg-[#c27803] hover:bg-[#a66502] text-white text-xs font-bold px-3 py-2 rounded-md transition-colors shadow-sm flex items-center gap-1.5"
+                                                    >
+                                                        <Plus size={14} strokeWidth={3} /> <span className="hidden sm:inline">{inCart ? 'Add Another' : 'Add to Order'}</span><span className="sm:hidden">Add</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -267,7 +448,10 @@ const AddOrder = () => {
                     <div className="space-y-4">
                         <div className="bg-white rounded-xl shadow-sm border border-orange-100/50 overflow-hidden">
                             <div className="bg-[#dca45b] px-4 py-3 flex justify-between items-center">
-                                <h3 className="font-bold text-gray-900">Payment Summary</h3>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">Payment Summary</h3>
+                                    <p className="text-[11px] text-gray-800 font-bold opacity-80 mt-0.5">Inv #: {invoiceId}</p>
+                                </div>
                                 <span className="flex items-center gap-1 text-sm bg-white/30 px-2 py-0.5 rounded font-semibold text-gray-900">
                                     <ShoppingCart size={14} /> {cartItems.reduce((s, i) => s + i.qty, 0)} items
                                 </span>
@@ -277,7 +461,7 @@ const AddOrder = () => {
                                 <div className="px-4 pt-3 space-y-2 max-h-52 overflow-y-auto">
                                     {cartItems.map((item) => {
                                         const linePrice = getSalePrice(item) * item.qty;
-                                        const lineVat = (linePrice * getVat(item)) / 100;
+                                        const lineVat = (linePrice ) / 100;
                                         return (
                                             <div key={item._id} className="flex items-center gap-2 pb-2 border-b border-gray-50 last:border-0">
                                                 <div className="flex-1 min-w-0">
@@ -299,6 +483,7 @@ const AddOrder = () => {
 
                             <div className="p-5 space-y-3 text-sm font-medium text-gray-600">
                                 <div className="flex justify-between border-b border-gray-100 pb-3"><span>Subtotal</span><span className="font-bold text-gray-800">৳ {fmt(subtotal)}</span></div>
+                                
                                 <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                                     <div>
                                         <span>Discount</span>
@@ -308,12 +493,49 @@ const AddOrder = () => {
                                         <input type="text" placeholder="%" value={discountPct} onChange={e => { setDiscountPct(e.target.value); setDiscountAmt(''); }} className="w-14 border border-gray-300 rounded p-1.5 text-right text-xs outline-none focus:border-[#c27803]" />
                                     </div>
                                 </div>
+
+                                {/* ADDED VAT CALCULATION TO SUMMARY */}
+                               
+
                                 <div className="flex justify-between text-base text-gray-900 font-bold bg-orange-50 rounded-lg px-3 py-2.5"><span>Total</span><span className="text-[#c27803]">৳ {fmt(total)}</span></div>
                                 <div className="flex justify-between items-center text-green-600">
                                     <span>Paid</span>
                                     <input type="number" placeholder="Enter amount" value={paidAmt} onChange={e => setPaidAmt(e.target.value)} className="w-28 border border-green-200 rounded p-1.5 text-right text-sm font-semibold text-green-700 outline-none focus:border-green-500" />
                                 </div>
-                                <div className="flex justify-between text-red-500 font-semibold border-t border-gray-100 pt-2"><span>Due Amount</span><span>৳ {fmt(due)}</span></div>
+                                <div className="flex justify-between text-red-500 font-semibold border-t border-gray-100 pt-2 pb-2"><span>Due Amount</span><span>৳ {fmt(due)}</span></div>
+
+                                {/* Customer Name, Expected Delivery & Order Note UI */}
+                                <div className="pt-4 border-t border-gray-100 space-y-4">
+                                    <div>
+                                        <label className="text-xs text-gray-500 font-bold mb-1.5 block">Customer Name</label>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Enter customer name..."
+                                            value={customerName} 
+                                            onChange={e => setCustomerName(e.target.value)} 
+                                            className="w-full border border-gray-200 rounded-lg p-2 text-xs text-gray-700 outline-none focus:border-[#c27803] focus:ring-1 focus:ring-[#c27803] transition-all bg-gray-50" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 font-bold mb-1.5 block">Expected Delivery</label>
+                                        <input 
+                                            type="date" 
+                                            value={deliveryDate} 
+                                            onChange={e => setDeliveryDate(e.target.value)} 
+                                            className="w-full border border-gray-200 rounded-lg p-2 text-xs text-gray-700 outline-none focus:border-[#c27803] focus:ring-1 focus:ring-[#c27803] transition-all bg-gray-50" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 font-bold mb-1.5 block">Order Note / Details</label>
+                                        <textarea 
+                                            placeholder="Write any specific instructions here..." 
+                                            value={note} 
+                                            onChange={e => setNote(e.target.value)} 
+                                            rows="2" 
+                                            className="w-full border border-gray-200 rounded-lg p-2 text-xs text-gray-700 outline-none focus:border-[#c27803] focus:ring-1 focus:ring-[#c27803] transition-all bg-gray-50 resize-none"
+                                        ></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -330,11 +552,11 @@ const AddOrder = () => {
 
             {/* ── ON-SCREEN MODAL (Hidden during print) ── */}
             {successModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 p-4 print:block overflow-y-auto backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 p-4 print:hidden overflow-y-auto backdrop-blur-sm">
                     <div className="bg-[#fffdfa] rounded-[2rem] max-w-[1000px] w-full flex flex-col md:flex-row shadow-2xl overflow-hidden">
                         
                         {/* LEFT SIDE MODAL */}
-                        <div className="print:hidden md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-white">
+                        <div className="md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-white">
                             <h1 className="text-[2.75rem] font-black text-[#1a1a1a] leading-tight mb-4 tracking-tight">
                                 Thank you for your purchase!
                             </h1>
@@ -344,8 +566,10 @@ const AddOrder = () => {
 
                             <h3 className="font-bold text-[#1a1a1a] text-lg mb-4">Billing address</h3>
                             <div className="grid grid-cols-[100px_1fr] gap-y-3 text-[14px] text-gray-800 font-medium mb-10">
+                                <span className="text-gray-900 font-bold">Customer</span>
+                                <span>{successModal.customerName}</span>
                                 <span className="text-gray-900 font-bold">Branch</span>
-                                <span>{successModal.branch.charAt(0).toUpperCase() + successModal.branch.slice(1)}</span>
+                                <span>{(successModal.branch || 'demo').charAt(0).toUpperCase() + (successModal.branch || 'demo').slice(1)}</span>
                                 <span className="text-gray-900 font-bold">Delivery</span>
                                 <span>{successModal.expectedDelivery || "Standard Timeline"}</span>
                                 <span className="text-gray-900 font-bold">Note</span>
@@ -374,19 +598,19 @@ const AddOrder = () => {
                                 <div className="p-8">
                                     <h2 className="text-2xl font-black text-[#1a1a1a] mb-8">Order Summary</h2>
 
-                                    {/* Top Grid */}
                                     <div className="grid grid-cols-3 gap-4 pb-6 border-b border-dashed border-gray-200">
                                         <div>
                                             <p className="text-xs text-gray-500 mb-1">Date</p>
                                             <p className="text-[13px] font-bold text-[#1a1a1a]">{successModal.date}</p>
                                         </div>
-                                        <div>
-                                            <p className="text-xs text-gray-500 mb-1">Order Number</p>
+                                        <div className="flex flex-col items-center justify-center">
+                                            <p className="text-xs text-gray-500 mb-1">Order / Invoice</p>
                                             <p className="text-[13px] font-bold text-[#1a1a1a]">#{successModal.orderId.toString().slice(-8)}</p>
+                                            <p className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded mt-0.5">INV-{successModal.Invoice}</p>
                                         </div>
-                                        <div>
+                                        <div className="text-right">
                                             <p className="text-xs text-gray-500 mb-1">Status</p>
-                                            <p className="text-[13px] font-bold text-[#1a1a1a]">Confirmed</p>
+                                            <p className="text-[13px] font-bold text-green-600">Confirmed</p>
                                         </div>
                                     </div>
 
@@ -449,83 +673,142 @@ const AddOrder = () => {
                 </div>
             )}
 
-            {/* ── PRINT ONLY VIEW (Hidden on screen, pure receipt for PDF generation) ── */}
+            {/* ── PRINT ONLY VIEW (CASH RECEIPT - MATCHING IMAGE DESIGN) ── */}
             {successModal && (
-                <div className="hidden print:block w-full text-black bg-white">
-                    <div className="max-w-[500px] mx-auto py-10 px-6">
-                        <h2 className="text-3xl font-black text-black mb-8 text-center border-b pb-4">Order Summary</h2>
+                <div className="hidden print:flex w-full items-center justify-center bg-white text-black p-0 m-0 print:absolute print:inset-0 print:z-[9999]">
+                    <div className="w-full max-w-[800px] font-sans text-black border-[2px] border-black m-2 flex flex-col">
+                        
+                        {/* Header: Title */}
+                        <div className="text-center border-b-[2px] border-black py-2">
+                            <h1 className="text-red-600 text-2xl font-bold uppercase tracking-wider">
+                                Cash Receipt
+                            </h1>
+                        </div>
 
-                        {/* Top Grid */}
-                        <div className="flex justify-between pb-6 border-b border-dashed border-gray-300">
-                            <div>
-                                <p className="text-xs text-gray-500 mb-1">Date</p>
-                                <p className="text-[14px] font-bold text-black">{successModal.date}</p>
+                        {/* Header: Subtitle */}
+                        <div className="text-center border-b-[2px] border-black py-1.5">
+                            <h2 className="text-blue-900 text-lg font-bold">
+                                {(successModal.branch || 'Business Name and Address').toUpperCase()}
+                            </h2>
+                        </div>
+
+                        {/* Row: Date, Delivery & Receipt No */}
+                        <div className="flex border-b-[2px] border-black">
+                            <div className="w-1/3 border-r-[2px] border-black p-1.5 flex gap-2">
+                                <span className="font-semibold underline">Date:</span>
+                                <span>{successModal.date}</span>
                             </div>
-                            <div className="text-center">
-                                <p className="text-xs text-gray-500 mb-1">Order Number</p>
-                                <p className="text-[14px] font-bold text-black">#{successModal.orderId.toString().slice(-8)}</p>
+                            <div className="w-1/3 border-r-[2px] border-black p-1.5 flex gap-2 truncate">
+                                <span className="font-semibold underline">Delivery:</span>
+                                <span>{successModal.expectedDelivery || 'N/A'}</span>
                             </div>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-500 mb-1">Status</p>
-                                <p className="text-[14px] font-bold text-black">Confirmed</p>
+                            <div className="w-1/3 p-1.5 flex gap-2">
+                                <span className="font-semibold underline">Receipt No.</span>
+                                <span>{successModal.Invoice}</span>
                             </div>
                         </div>
 
-                        {/* Product List */}
-                        <div className="py-6 border-b border-dashed border-gray-300 space-y-6">
-                            {successModal.Products.map((item, idx) => (
-                                <div key={idx} className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 text-xl font-bold text-gray-600 border border-gray-300">
-                                        {item.productName.charAt(0).toUpperCase()}
+                        {/* Spacer Row */}
+                        <div className="border-b-[2px] border-black h-6"></div>
+
+                        {/* Row: Received From & Amount */}
+                        <div className="flex border-b-[2px] border-black">
+                            <div className="w-1/2 border-r-[2px] border-black p-1.5 flex gap-2 items-center">
+                                <span className="font-semibold underline">Received From :</span>
+                                <span className="font-medium text-sm">{successModal.customerName}</span>
+                            </div>
+                            <div className="w-1/2 p-1.5 flex gap-2 items-center">
+                                <span className="font-semibold">Amount (৳)</span>
+                                <span className="font-bold">{fmt(successModal.paid)}</span>
+                            </div>
+                        </div>
+
+                        {/* Row: Amount in words */}
+                        <div className="border-b-[2px] border-black p-1.5 flex gap-2 min-h-[36px] items-center">
+                            <span className="font-semibold underline">Amount in words:</span>
+                            <span className="italic text-gray-700 flex-1 border-b border-dashed border-gray-400 h-5">
+                                {convertNumberToWords(successModal.paid)}
+                            </span>
+                        </div>
+
+                        {/* Wide Spacer Row */}
+                        <div className="border-b-[2px] border-black h-10"></div>
+
+                        {/* Row: Payment Purpose */}
+                        <div className="border-b-[2px] border-black p-1.5 flex gap-2 min-h-[36px] items-center">
+                            <span className="font-semibold underline">Payment Purpose:</span>
+                            <span>Order #{successModal.orderId.toString().slice(-8)} Payment</span>
+                        </div>
+
+                        {/* Headers for Bottom Grid */}
+                        <div className="flex border-b-[2px] border-black text-center bg-white">
+                            <div className="w-1/2 border-r-[2px] border-black p-1.5">
+                                <span className="font-semibold underline">Account Details:</span>
+                            </div>
+                            <div className="w-1/2 p-1.5">
+                                <span className="font-semibold underline">Payment Mode:</span>
+                            </div>
+                        </div>
+
+                        {/* Bottom Split Section */}
+                        <div className="flex min-h-[220px]">
+                            
+                            {/* LEFT COLUMN - Account Details */}
+                            <div className="w-1/2 border-r-[2px] border-black flex flex-col">
+                                <div className="flex border-b-[2px] border-black p-1.5 h-10 items-center justify-between">
+                                    <span className="font-semibold">Total Due Amount:</span>
+                                    <span>৳{fmt(successModal.total)}</span>
+                                </div>
+                                <div className="flex border-b-[2px] border-black p-1.5 h-10 items-center justify-between">
+                                    <span className="font-semibold">Total Amount Paid:</span>
+                                    <span>৳{fmt(successModal.paid)}</span>
+                                </div>
+                                <div className="flex border-b-[2px] border-black h-10">
+                                    <div className="w-2/3 border-r-[2px] border-black p-1.5 flex items-center">
+                                        <span className="font-semibold">Balance Due:</span>
                                     </div>
-                                    <div className="flex-1">
-                                        <h4 className="font-bold text-black text-sm mb-1 line-clamp-1">{item.productName}</h4>
-                                        <p className="text-xs text-gray-600 mb-0.5">Category: {item.category || 'Standard'}</p>
-                                        <p className="text-xs text-gray-600">Qty: {item.quantity} (VAT {item.vatPercentage}%)</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-black text-sm">৳{fmt(item.TotalWithVat)}</p>
+                                    <div className="w-1/3 p-1.5 flex items-center justify-center font-bold">
+                                        {successModal.dueAmount <= 0 ? "-" : `৳${fmt(successModal.dueAmount)}`}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                                {/* Empty space filler for left column */}
+                                <div className="flex-1 bg-white"></div>
+                            </div>
 
-                        {/* Totals List */}
-                        <div className="py-6 border-b border-dashed border-gray-300 space-y-3 text-sm">
-                            <div className="flex justify-between text-gray-700">
-                                <span>Sub Total</span>
-                                <span className="font-bold text-black">৳{fmt(successModal.price)}</span>
-                            </div>
-                            <div className="flex justify-between text-gray-700">
-                                <span>Discount</span>
-                                <span className="font-bold text-black">- ৳{fmt(successModal.discount)}</span>
-                            </div>
-                            <div className="flex justify-between text-gray-700">
-                                <span>Tax (VAT)</span>
-                                <span className="font-bold text-black">+ ৳{fmt(successModal.totalVat)}</span>
-                            </div>
-                        </div>
+                            {/* RIGHT COLUMN - Payment Mode & Signature */}
+                            <div className="w-1/2 flex flex-col">
+                                {/* Checkboxes/Amounts */}
+                                <div className="flex border-b-[2px] border-black h-10">
+                                    <div className="w-1/2 border-r-[2px] border-black p-1.5 flex items-center">
+                                        <span className="font-semibold">Cash:</span>
+                                    </div>
+                                    <div className="w-1/2 p-1.5 flex items-center justify-center font-bold text-lg">
+                                        ✓
+                                    </div>
+                                </div>
+                                <div className="flex border-b-[2px] border-black h-10">
+                                    <div className="w-1/2 border-r-[2px] border-black p-1.5 flex items-center">
+                                        <span className="font-semibold">Check No :</span>
+                                    </div>
+                                    <div className="w-1/2 p-1.5 flex items-center justify-center font-bold">
+                                        {invoiceId}
+                                    </div>
+                                </div>
+                                {/* Money Order removed per request */}
 
-                        {/* Grand Total */}
-                        <div className="pt-6 pb-4 border-b-2 border-black">
-                            <div className="flex justify-between items-center mb-6">
-                                <span className="font-black text-black text-xl">Order Total</span>
-                                <span className="font-black text-black text-xl">৳{fmt(successModal.total)}</span>
+                                {/* Signature Block exactly matching the lines */}
+                                <div className="border-b-[2px] border-black h-8"></div>
+                                
+                                <div className="border-b-[2px] border-black h-10 flex items-center justify-center">
+                                    <span className="font-semibold underline">Received By:</span>
+                                </div>
+                                
+                                <div className="border-b-[2px] border-black h-12"></div>
+                                
+                                <div className="p-1.5 h-10 flex items-end">
+                                    <span className="font-semibold text-sm">Name and Signature:</span>
+                                </div>
                             </div>
-                            
-                            <div className="flex justify-between text-gray-800 mb-2">
-                                <span className="font-medium">Amount Paid</span>
-                                <span className="font-bold">৳{fmt(successModal.paid)}</span>
-                            </div>
-                            <div className="flex justify-between text-black font-bold">
-                                <span>Balance Due</span>
-                                <span>৳{fmt(successModal.dueAmount)}</span>
-                            </div>
-                        </div>
-                        
-                        <div className="mt-8 text-center text-xs text-gray-500">
-                            <p className="font-semibold mb-1">Thank you for your purchase!</p>
-                            <p>Branch: {successModal.branch.toUpperCase()}</p>
                         </div>
                     </div>
                 </div>

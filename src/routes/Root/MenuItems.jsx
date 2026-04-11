@@ -92,6 +92,24 @@ const useMenuItems = () => {
 },
 
 {
+  title: "Purchase",
+  icon: <MdOutlinePeople className="text-lg" />,
+  list: [
+    {
+      title: "Purchase",
+      path: "/purchase/purchase",
+      icon: <MdOutlinePerson className="text-lg" />,
+    },
+    {
+      title: "Purchase List",
+      path: "/purchase/purchaseList",
+      icon: <MdOutlineReceiptLong className="text-lg" />,
+    },
+  ],
+},
+
+
+{
   title: "Customer",
   icon: <MdOutlinePeople className="text-lg" />,
   list: [

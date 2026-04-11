@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
-import useAuth from "./useAuth"; // Adjust path if necessary
+import useAuth from "./useAuth";
 
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BASE_URL}/gold-products`;
@@ -12,102 +12,126 @@ export const useGoldProducts = () => {
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
-    totalItems: 0
+    totalItems: 0,
   });
-  const [loading, setLoading] = useState(false);
 
-  // States for Dynamic Dropdowns (Only Categories kept)
+  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  // Fetch Gold Products (Updated to handle category filtering)
-  const fetchGoldProducts = useCallback(async (page = 1, limit = 10, categoryId = "") => {
-    if (!branch) return;
+  // ✅ FETCH PRODUCTS WITH SEARCH + CATEGORY
+  const fetchGoldProducts = useCallback(
+    async ({ page = 1, limit = 10, category = "", search = "" } = {}) => {
+      if (!branch) return;
 
-    try {
-      setLoading(true);
-      
-      // Build query parameters dynamically
-      const params = { page, limit };
-      
-      // If a categoryId is provided, add it to the API request
-      if (categoryId) {
-        params.category = categoryId; // Note: Ensure 'category' matches the query parameter your backend expects (e.g., ?category=123)
+      try {
+        setLoading(true);
+
+        const params = {
+          page,
+          limit,
+        };
+
+        // ✅ Add category if exists and is not 'All'
+        if (category && category.toLowerCase() !== "all") {
+          params.category = category.trim();
+        }
+
+        // ✅ Add search if exists
+        if (search && search.trim() !== "") {
+          params.search = search.trim();
+        }
+
+        const res = await axios.get(`${API}/${branch}/get-all`, {
+          params,
+        });
+
+        setGoldProducts(res.data?.data || []);
+
+        setPagination({
+          currentPage: res.data?.pagination?.currentPage || page,
+          totalPages: res.data?.pagination?.totalPages || 1,
+          totalItems: res.data?.pagination?.totalItems || 0,
+        });
+      } catch (err) {
+        console.error("Fetch Products Error:", err);
+        setGoldProducts([]);
+      } finally {
+        setLoading(false);
       }
+    },
+    [branch]
+  );
 
-      const res = await axios.get(`${API}/${branch}/get-all`, { params });
-      
-      setGoldProducts(res.data?.data || []);
-      setPagination(res.data?.pagination || { currentPage: page, totalPages: 1, totalItems: res.data?.data?.length || 0 });
-    } catch (err) {
-      console.error(err);
-      setGoldProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [branch]);
-
-  // Fetch ONLY Categories
+  // ✅ FETCH CATEGORY FILTERS
   const fetchFilters = useCallback(async () => {
     if (!branch) return;
 
     try {
-      const catRes = await axios.get(`${BASE_URL}/gold-categories/${branch}/get-all`);
-      setCategories(catRes.data?.data || []);
+      const res = await axios.get(
+        `${BASE_URL}/gold-categories/${branch}/get-all`
+      );
+      setCategories(res.data?.data || []);
     } catch (err) {
-      console.error("Error fetching filters:", err);
+      console.error("Fetch Categories Error:", err);
     }
   }, [branch]);
 
-  // --- GET SINGLE PRODUCT BY ID ---
+  // ✅ GET BY ID
   const getGoldProductById = async (id) => {
     try {
       setLoading(true);
       const res = await axios.get(`${API}/get-id/${id}`);
-      return res.data; 
+      return res.data;
     } catch (err) {
-      console.error("Error fetching product by ID:", err);
+      console.error("Get Product Error:", err);
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // CREATE
+  // ✅ CREATE
   const createGoldProduct = async (productData) => {
     try {
       setLoading(true);
-      const res = await axios.post(`${API}/post`, { ...productData, branch });
+      const res = await axios.post(`${API}/post`, {
+        ...productData,
+        branch,
+      });
       return res.data;
     } catch (err) {
-      console.error(err.response?.data);
+      console.error("Create Error:", err.response?.data);
       return null;
     } finally {
       setLoading(false);
     }
   };
 
-  // UPDATE
+  // ✅ UPDATE
   const updateGoldProduct = async (id, productData) => {
     try {
       setLoading(true);
-      await axios.put(`${API}/update/${id}`, { ...productData, branch });
+      await axios.put(`${API}/update/${id}`, {
+        ...productData,
+        branch,
+      });
       return true;
     } catch (err) {
-      console.error(err);
+      console.error("Update Error:", err);
       return false;
     } finally {
       setLoading(false);
     }
   };
 
-  // DELETE
+  // ✅ DELETE
   const deleteGoldProduct = async (id) => {
     try {
       setLoading(true);
       await axios.delete(`${API}/delete/${id}`);
       return true;
     } catch (err) {
-      console.error(err);
+      console.error("Delete Error:", err);
       return false;
     } finally {
       setLoading(false);
@@ -125,6 +149,6 @@ export const useGoldProducts = () => {
     getGoldProductById,
     createGoldProduct,
     updateGoldProduct,
-    deleteGoldProduct
+    deleteGoldProduct,
   };
 };
