@@ -29,7 +29,7 @@ import ProductList from "../pages/Product/ProductList/ProductList";
 import AddProduct from "../pages/Product/AddProduct/AddProduct";
 import MetalProductCategory from "../pages/Product/MetalProductCategory/MetalProductCategory";
 import MyStocks from "../pages/MyStocks/MyStocks";
-import ReturnList from "../pages/Sales/ReturnList/ReturnList";
+
 import SalesList from "../pages/Sales/SalesList/SalesList";
 import PosSale from "../pages/Sales/PosSale/PosSale";
 import Sale from "../pages/Sales/Sale/Sale";
@@ -235,14 +235,7 @@ export const router = createBrowserRouter([
         </PrivateRoot>
       ),
     },
-    {
-      path: "return-list",
-      element: (
-        <PrivateRoot>
-          <ReturnList />
-        </PrivateRoot>
-      ),
-    },
+ 
   ],
 },
 

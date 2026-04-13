@@ -83,11 +83,7 @@ const useMenuItems = () => {
       path: "/sales/list",
       icon: <MdOutlineList className="text-lg" />,
     },
-    {
-      title: "Return List",
-      path: "/sales/return-list",
-      icon: <MdOutlineAssignmentReturn className="text-lg" />,
-    },
+    
   ],
 },
 
